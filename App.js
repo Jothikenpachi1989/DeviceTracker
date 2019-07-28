@@ -13,6 +13,7 @@ import ScanPage from './Screens/ScanPage';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import DeviceList from './Screens/DeviceList';
 import HomePage from './Screens/HomePage'
+import UserPage from './Screens/UserPage'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -85,6 +86,7 @@ const AppNavigator = createStackNavigator(
     HomeScreen: { screen: HomePage },
     DeviceList: { screen: DeviceList},
     Scan: { screen: ScanPage},
+    UserPage: {screen: UserPage},
   },
   {
     initialRouteName: 'HomeScreen',

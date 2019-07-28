@@ -1,19 +1,14 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import { Button, Icon, ListItem, Card } from 'react-native-elements';
+import {Platform, StyleSheet, Text, View, Image} from 'react-native';
+import { Button, Icon, ListItem, Card} from 'react-native-elements';
 import { TouchableOpacity, Linking, PermissionsAndroid } from 'react-native';
 import { CameraKitCameraScreen, } from 'react-native-camera-kit';
 import Modal from "react-native-modal";
 import DeviceList from './DeviceList';
+import UserPage from './UserPage';
+
 var Person_Code = "", Device_Code = "", flag = false, AuthSuccess= false, DeviceSuccess=false, NextDeivce = false;
-
-const users = [
-  {
-     name: 'Lawrence',
-     avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg'
-  },
-  ]
-
+var PersonName = "Lawrence", DeviceName = "Android - Samsung S9";
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -121,6 +116,16 @@ validateDeviceQRCode=(Device_Code)=>{
 
   return true;
 }
+//Navigation from Scan page to User Page when tap on Ok in the success popup
+navigateToUserPage=()=>{
+  this.setState({ isModalVisible: !this.state.isModalVisible });
+  DeviceSuccess = false;
+  Person_Code = "";
+   Device_Code = "";
+   flag = false;
+   AuthSuccess= false;
+   this.props.navigation.navigate('UserPage');
+}
   render() {
    
     const nav = this.props.navigation;
@@ -128,53 +133,63 @@ validateDeviceQRCode=(Device_Code)=>{
       
       return (
         <View style={styles.MainContainer}>
- 
           {!flag && !DeviceSuccess?
-              <Text style={{ fontSize: 22, textAlign: 'center' }}>Scan your Person QR Code</Text>  :null
+              <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
+                <Image source={require('../images/scan-icon.png')} />
+                <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Person QR Code</Text> 
+                <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>User Login</Text>   
+                <TouchableOpacity
+                  onPress={this.open_QR_Code_Scanner}
+                  style={styles.button}>
+                    <Text style={{ color: '#FFF', fontSize: 14 }}>
+                      Scan Now
+                    </Text>
+                </TouchableOpacity>
+              </View>:null
           }
           {flag && AuthSuccess ?
-              <View>
-                <Text style={{ fontSize: 22, textAlign: 'center' }}>Welcome</Text> 
-               <Card containerStyle={{padding: 0}} >
-                {
-                  users.map((u, i) => {
-                    return (
-                      <ListItem
-                        key={i}
-                        roundAvatar
-                        title={u.name}
-                        avatar={{uri:u.avatar}}
-                      />
-                    );
-                  })
-                }
-              </Card>
-              <Text style={{ fontSize: 22, textAlign: 'center' }}>Scan your Device QR Code</Text> 
+              <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
+              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, Lawrence</Text> 
+              <Image source={require('../images/scan-icon.png')} />
+              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device QR Code</Text> 
+              <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>Device Issues or Return</Text> 
+              <TouchableOpacity
+                onPress={this.open_QR_Code_Scanner}
+                style={styles.button}>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>
+                    Scan Now
+                  </Text>
+              </TouchableOpacity>
               </View>:null
           }
           {DeviceSuccess ? 
               <View style={{ flex: 1 }}>
               
               <Modal isVisible={this.state.isModalVisible}>
-                <View style={{ flex: 0.3, backgroundColor: '#ffffff' }}>
-                  <Text>Hello!</Text>
-                  <Card containerStyle={{padding: 0}} >
-                  {
-                    users.map((u, i) => {
-                      return (
-                        <ListItem
-                          key={i}
-                          roundAvatar
-                          title={u.name}
-                          avatar={{uri:u.avatar}}
-                        />
-                      );
-                    })
-                  }
-              </Card> 
-                  <Button title="Ok" onPress={this.toggleModal} />
-                  <Button title="Scan more" onPress={this.toggleModal} />
-                </View>
+              <Card containerStyle={{alignItems: 'center', }}
+                title='Success'
+                titleStyle={{fontSize: 18,}}
+                >
+                <Text style={{marginBottom: 10,}}>
+                  {DeviceName} is now issued to {PersonName}.
+                  </Text>
+                  <View style={{flexDirection: 'column', alignItems: 'center',}}>
+                    
+                    <Button
+                      backgroundColor='#03A9F4'
+                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:150,}}
+                      raised
+                      title='Scan More' />
+
+                      <Button
+                      onPress =  {this.navigateToUserPage}
+                      buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0,width:150, backgroundColor: '#ffffff',}}
+                      title='OK' 
+                      type = 'clear'
+                      raised
+                      titleStyle={{color: '#616161'}}/>
+                  </View>
+              </Card>
               </Modal>
             </View>
             :null
@@ -188,13 +203,7 @@ validateDeviceQRCode=(Device_Code)=>{
             </TouchableOpacity> : null
           }
                 
-          <TouchableOpacity
-            onPress={this.open_QR_Code_Scanner}
-            style={styles.button}>
-            <Text style={{ color: '#FFF', fontSize: 14 }}>
-              Scan Now
-            </Text>
-          </TouchableOpacity>
+          
  
         </View>
         
@@ -233,10 +242,11 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   button: {
-    backgroundColor: '#2979FF',
+    backgroundColor: '#2F95D6',
     alignItems: 'center',
     padding: 12,
-    width: 300,
-    marginTop: 14
+    width: 200,
+    marginTop: 14,
   },
+  
 });
