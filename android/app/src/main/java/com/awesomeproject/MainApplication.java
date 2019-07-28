@@ -3,6 +3,7 @@ package com.awesomeproject;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.wix.RNCameraKit.RNCameraKitPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
          new SQLitePluginPackage(),   // register SQLite Plugin here
           new MainReactPackage(),
+            new RNCameraKitPackage(),
             new RNGestureHandlerPackage(),
             new VectorIconsPackage()
       );

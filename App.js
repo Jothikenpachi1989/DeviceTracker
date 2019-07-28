@@ -6,13 +6,13 @@
  * @flow
  */
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View,Button} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button} from 'react-native';
 import { connect } from 'react-redux';
 import { addUser } from './actions/user';
-import { Card, Icon } from 'react-native-elements';
 import ScanPage from './Screens/ScanPage';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import DeviceList from './Screens/DeviceList';
+import HomePage from './Screens/HomePage'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -52,34 +52,7 @@ class App extends React.Component {
   // }
   render() {
     return (
-    <View style={{flex: 1}}>
-      
-        <Card containerStyle={{flex:1, justifyContent: "center"}}
-          title='Access with your QR code'>
-          <Text style={{marginBottom: 30}}>
-            Tap to Scan your QR code to reserve a device.
-          </Text>
-          <Button
-            icon={<Icon name='code' color='#ffffff' />}
-            backgroundColor='#03A9F4'
-            buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-            onPress={() => this.props.navigation.navigate('Scan')}
-            title='SCAN NOW' />
-        </Card>
-       
-        <Card containerStyle={{flex:1, justifyContent: "center"}}
-          title='Device List'>
-          <Text style={{marginBottom: 30}}>
-            You can view the list of all available devices.
-          </Text>
-          <Button
-            icon={<Icon name='code' color='#ffffff' />}
-            backgroundColor='#03A9F4'
-            buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-            onPress={() => this.props.navigation.navigate('DeviceList')}
-            title='VIEW NOW' />
-        </Card>
-         </View>
+    <AppContainer/>
     );
   }
 }
@@ -109,14 +82,14 @@ const mapDispatchToProps = dispatch => {
 }
 const AppNavigator = createStackNavigator(
   {
-    HomeScreen: App,
-    DeviceList: DeviceList,
-    Scan: ScanPage
+    HomeScreen: { screen: HomePage },
+    DeviceList: { screen: DeviceList},
+    Scan: { screen: ScanPage},
   },
   {
-    initialRouteName: "HomeScreen"
+    initialRouteName: 'HomeScreen',
   }
 );
-createAppContainer(AppNavigator);
+const AppContainer = createAppContainer(AppNavigator);
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App);

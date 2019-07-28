@@ -9,8 +9,6 @@ import {name as appName} from './app.json';
 import { Provider } from 'react-redux';
 
 import configureStore from './store';
-import ScanPage from './Screens/ScanPage';
-import DeviceList from './Screens/DeviceList';
 
 const store = configureStore()
 const RNRedux = () => (
