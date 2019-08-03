@@ -20,7 +20,12 @@ export default class HomePage extends React.Component {
       },
       headerTitleStyle: {
         fontSize: 18,
-      },
+      },headerRight: (
+        <Button
+          title="Help"
+          type="outline"
+        />
+      ),
   };
   render() {
     const nav = this.props.navigation;
