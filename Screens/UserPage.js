@@ -1,18 +1,14 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, FlatList} from 'react-native';
-import { Button, Icon, SearchBar, ButtonGroup, Card } from 'react-native-elements';
-import { Avatar, ListItem } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
+import { Avatar, Badge } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 var uname = "Lawrence Francis";
-const users = [
-  {
-     name: 'Lawrence Francis',
-     avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-  },
- ]
+var profilepic = '../images/profile-icon.png';
+var nofdevices = 0;
 
 export default class UserPage extends React.Component {
   static navigationOptions = {
@@ -27,12 +23,9 @@ export default class UserPage extends React.Component {
         fontSize: 18,
       },
     headerRight: (
-      <Button
-        onPress={() => alert('This is a button!')}
-        title="Log Out"
-        color="#ffffff"
-        type='outline'
-        fontSize="6"
+       <Button
+       onPress={() => {this.props.navigation.navigate('HomeScreen')}}
+        icon={<Icon name='open-in-new' size={25} color='#ffffff' />}
       />
     ),
   };
@@ -44,6 +37,7 @@ export default class UserPage extends React.Component {
     db.transaction(tx => {
       tx.executeSql('select devicetype, devicename, team, location, devicestatus from all_device_detailes', [], (tx, results) => {
         var temp = [];
+        nofdevices = results.rows.length;
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
         }
@@ -58,7 +52,6 @@ export default class UserPage extends React.Component {
       <View style={{ height: 0.2, width: '100%', backgroundColor: '#808080' }} />
     );
   };
-
   render() {
     const swipeoutBtns = [
       {
@@ -85,16 +78,13 @@ export default class UserPage extends React.Component {
     <View style={customstyle.container}>
       <View style={customstyle.userRow}>
           <View style={customstyle.userImage}>
-            <Avatar rounded size='medium'
-              source={{
-                uri: users.avatar,
-              }}
-            />
+          <Avatar rounded icon={{ name: 'person' }} />
           </View>
           <View>
             <Text style={{ color: 'gray', fontSize: 16,}} >{uname} </Text>
           </View>
-        </View>
+          <Badge value={"# of devices : " + nofdevices} status="success"></Badge>
+           </View>
         
         <FlatList
             data={this.state.FlatListItems}
@@ -120,6 +110,7 @@ export default class UserPage extends React.Component {
         
         <View style={ customstyle.bottomView} >
         <Button
+         onPress={() => this.props.navigation.navigate('Scan')}
             backgroundColor='#03A9F4'
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:150,}}
             raised
@@ -134,7 +125,7 @@ const customstyle = StyleSheet.create(
     userRow: {
       alignItems: 'center',
       flexDirection: 'row',
-      paddingBottom: 5,
+      paddingBottom: 10,
       paddingLeft: 15,
       paddingRight: 15,
       paddingTop: 3,

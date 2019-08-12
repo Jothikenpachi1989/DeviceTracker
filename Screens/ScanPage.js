@@ -7,15 +7,17 @@ import Modal from "react-native-modal";
 import DeviceList from './DeviceList';
 import UserPage from './UserPage';
 
-var Person_Code = "", Device_Code = "", flag = false, AuthSuccess= false, DeviceSuccess=false, NextDeivce = false;
-var PersonName = "Lawrence", DeviceName = "Android - Samsung S9";
+var SQlite = require('react-native-sqlite-storage')
+var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
+
+//var AuthSuccess= false, DeviceSuccess=false, NextDeivce = false;
+//var PersonName = "Lawrence", DeviceName = "Android - Samsung S9", validPerson = "False";
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-
 export default class ScanPage extends React.Component {
   static navigationOptions = {
     title: 'Scan code',
@@ -41,6 +43,15 @@ export default class ScanPage extends React.Component {
       QR_Code_Value: '',
       Start_Scanner: false,
       Person_Code: '',
+      isAdmin: false,
+      Device_Code: '',
+      flag: false,
+      AuthSuccess: false, 
+      DeviceSuccess: false, 
+      NextDeivce: false,
+      PersonName: '', 
+      DeviceName: '', 
+      validPerson: 'False',
     };
   }
   //QR scanner method
@@ -77,23 +88,29 @@ export default class ScanPage extends React.Component {
   onQR_Code_Scan_Done = (QR_Code) => {
     this.setState({ QR_Code_Value: QR_Code });
     this.setState({ Start_Scanner: false });
-    if(!flag){
-      flag = true;
-    Person_Code = QR_Code;
-    AuthSuccess = this.validatePersonQRCode(Person_Code);
-    if(!AuthSuccess){
-        alert("Please use valid QR code to authenticate.")
+    if(!this.state.flag){
+      const authflag = this.validatePersonQRCode(this.state.Person_Code);
+    if(authflag){
+        alert("Please scan valid Person QR code to authenticate.")
+        this.setState({AuthSuccess : false});
+      }
+      else{
+        this.state.flag = true;
+        this.state.Person_Code = QR_Code;
+        this.setState({AuthSuccess : true});
       }
     } 
     else{
-      flag = false;
-      Device_Code = QR_Code;
-      DeviceSuccess =this.validateDeviceQRCode(Device_Code);
-        if(!DeviceSuccess){
-          alert("Please use valid QR code to authenticate.")
+      this.state.flag = false;
+      this.state.Device_Code = QR_Code;
+      authflag =this.validateDeviceQRCode(this.state.Device_Code);
+        if(authflag){
+          alert("Please scan valid Device code to authenticate.")
+          this.setState({DeviceSuccess : false});
         }
         else{
           this.toggleModal();
+          this.setState({DeviceSuccess : true});
         }
     }
   }
@@ -101,30 +118,68 @@ export default class ScanPage extends React.Component {
   state = {
     isModalVisible: false
   };
- 
+ //Database validation of Person Code and get Person details
+validatePersonQRCode=(Person_Code)=>{
+  var tempStr = Person_Code.split("_");
+  db.transaction(tx => {
+    tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = "mcl-5" and location="Chennai"', [], (tx, results) => {
+      if(results.rows.length > 0){
+        validPerson = true;
+        this.setState({AuthSuccess : true});
+        this.state.PersonName = results.rows.item(0).firstname + " " + results.rows.item(0).lastname;
+          if(results.rows.item(0).isadmin == 'y'){
+            this.setState({isAdmin : true});
+          }
+          return true;
+      }
+      else{
+        return false;
+      }
+    });
+  });
+}
+//Database validation of Device Code
+validateDeviceQRCode=(Device_Code)=>{
+  //alert(Device_Code);
+  db.transaction(tx => {
+    tx.executeSql('select devicename, devicestatus, devicetype from devices WHERE assetid =?', [Device_Code], (tx, results) => {
+     if(results.rows.length > 0){
+        validPerson = true;
+        this.setState({DeviceSuccess : true});
+        this.state.DeviceName = results.rows.item(0).devicename + "-" + results.rows.item(0).devicetype;
+        alert(this.state.DeviceName);
+          return true;
+      }
+      else{
+        return false;
+      }
+    });
+  });
+}
   toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
-    //DeviceSuccess = false;
+    //this.state.DeviceSuccess = false;
   };
 
-//Database validation of Person and Device Code
-validatePersonQRCode=(Person_Code)=>{
-
-  return true;
-}
-validateDeviceQRCode=(Device_Code)=>{
-
-  return true;
-}
 //Navigation from Scan page to User Page when tap on Ok in the success popup
 navigateToUserPage=()=>{
   this.setState({ isModalVisible: !this.state.isModalVisible });
-  DeviceSuccess = false;
-  Person_Code = "";
-   Device_Code = "";
-   flag = false;
-   AuthSuccess= false;
+  this.state.DeviceSuccess = false;
+  this.state.Person_Code = "";
+  this.state.Device_Code = "";
+  this.state.flag = false;
+  this.state.AuthSuccess= false;
    this.props.navigation.navigate('UserPage');
+}
+//Scan more devices from pop up
+scanmore=()=>{
+  this.setState({ isModalVisible: !this.state.isModalVisible });
+  this.state.DeviceSuccess = false;
+  this.state.Person_Code = "";
+  this.state.Device_Code = "";
+  this.state.flag = true;
+  this.state.AuthSuccess= true;
+   //this.props.navigation.navigate('UserPage');
 }
   render() {
    
@@ -133,7 +188,7 @@ navigateToUserPage=()=>{
       
       return (
         <View style={styles.MainContainer}>
-          {!flag && !DeviceSuccess?
+          {!this.state.flag && !this.state.DeviceSuccess?
               <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
                 <Image source={require('../images/scan-icon.png')} />
                 <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Person QR Code</Text> 
@@ -147,7 +202,7 @@ navigateToUserPage=()=>{
                 </TouchableOpacity>
               </View>:null
           }
-          {flag && AuthSuccess ?
+          {this.state.flag && this.state.AuthSuccess ?
               <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, Lawrence</Text> 
               <Image source={require('../images/scan-icon.png')} />
@@ -162,7 +217,7 @@ navigateToUserPage=()=>{
               </TouchableOpacity>
               </View>:null
           }
-          {DeviceSuccess ? 
+          {this.state.DeviceSuccess ? 
               <View style={{ flex: 1 }}>
               
               <Modal isVisible={this.state.isModalVisible}>
@@ -171,11 +226,12 @@ navigateToUserPage=()=>{
                 titleStyle={{fontSize: 18,}}
                 >
                 <Text style={{marginBottom: 10,}}>
-                  {DeviceName} is now issued to {PersonName}.
+                  {this.state.DeviceName} is now issued to {this.state.PersonName}.
                   </Text>
                   <View style={{flexDirection: 'column', alignItems: 'center',}}>
                     
                     <Button
+                      onPress={this.scanmore}
                       backgroundColor='#03A9F4'
                       buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:150,}}
                       raised
