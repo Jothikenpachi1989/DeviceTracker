@@ -9,7 +9,7 @@ import UserPage from './UserPage';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-
+var Location = "";
 //var AuthSuccess= false, DeviceSuccess=false, NextDeivce = false;
 //var PersonName = "Lawrence", DeviceName = "Android - Samsung S9", validPerson = "False";
 const instructions = Platform.select({
@@ -52,6 +52,8 @@ export default class ScanPage extends React.Component {
       PersonName: '', 
       DeviceName: '', 
       validPerson: 'False',
+      validDevice: 'False',
+      deviceIssued: 'False',
     };
   }
   //QR scanner method
@@ -89,6 +91,7 @@ export default class ScanPage extends React.Component {
     this.setState({ QR_Code_Value: QR_Code });
     this.setState({ Start_Scanner: false });
     if(!this.state.flag){
+      this.state.Person_Code = QR_Code;
       const authflag = this.validatePersonQRCode(this.state.Person_Code);
     if(authflag){
         alert("Please scan valid Person QR code to authenticate.")
@@ -96,7 +99,6 @@ export default class ScanPage extends React.Component {
       }
       else{
         this.state.flag = true;
-        this.state.Person_Code = QR_Code;
         this.setState({AuthSuccess : true});
       }
     } 
@@ -105,7 +107,9 @@ export default class ScanPage extends React.Component {
       this.state.Device_Code = QR_Code;
       authflag =this.validateDeviceQRCode(this.state.Device_Code);
         if(authflag){
-          alert("Please scan valid Device code to authenticate.")
+          if(this.state.deviceIssued != "issued"){
+            alert("Please scan valid Device code to authenticate.")
+          } 
           this.setState({DeviceSuccess : false});
         }
         else{
@@ -121,12 +125,17 @@ export default class ScanPage extends React.Component {
  //Database validation of Person Code and get Person details
 validatePersonQRCode=(Person_Code)=>{
   var tempStr = Person_Code.split("_");
+  alert(Person_Code);
+  alert(tempStr[0] + " " + tempStr[1]);
+  if(tempStr[3] == "Che"){Location = "Chennai"}
+  if(tempStr[3] == "Hyd"){Location = "Hydrabad"}
   db.transaction(tx => {
-    tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = "mcl-5" and location="Chennai"', [], (tx, results) => {
+    tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ? and location= ?', [tempStr[1],Location], (tx, results) => {
       if(results.rows.length > 0){
-        validPerson = true;
+        this.setState({validPerson : true});
         this.setState({AuthSuccess : true});
-        this.state.PersonName = results.rows.item(0).firstname + " " + results.rows.item(0).lastname;
+        this.setState({PersonName : results.rows.item(0).firstname + " " + results.rows.item(0).lastname});
+        alert(this.state.PersonName);
           if(results.rows.item(0).isadmin == 'y'){
             this.setState({isAdmin : true});
           }
@@ -144,13 +153,19 @@ validateDeviceQRCode=(Device_Code)=>{
   db.transaction(tx => {
     tx.executeSql('select devicename, devicestatus, devicetype from devices WHERE assetid =?', [Device_Code], (tx, results) => {
      if(results.rows.length > 0){
-        validPerson = true;
+        this.setState({validDevice : true});
         this.setState({DeviceSuccess : true});
-        this.state.DeviceName = results.rows.item(0).devicename + "-" + results.rows.item(0).devicetype;
-        alert(this.state.DeviceName);
+        this.setState({DeviceName : results.rows.item(0).devicename + "-" + results.rows.item(0).devicetype});
+        if(results.rows.item(0).devicestatus == "issued"){
+          alert("This device is already issued. Please scan other devices.")
+          this.setState({deviceIssued: "True"});
+          this.setState({DeviceSuccess : false});
+          return false;
+        }
           return true;
       }
       else{
+        this.setState({validDevice : false});
         return false;
       }
     });
@@ -204,9 +219,9 @@ scanmore=()=>{
           }
           {this.state.flag && this.state.AuthSuccess ?
               <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
-              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, Lawrence</Text> 
+              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {this.state.PersonName}</Text> 
               <Image source={require('../images/scan-icon.png')} />
-              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device QR Code</Text> 
+              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device</Text> 
               <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>Device Issues or Return</Text> 
               <TouchableOpacity
                 onPress={this.open_QR_Code_Scanner}
