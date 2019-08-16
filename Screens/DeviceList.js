@@ -72,9 +72,9 @@ export default class DeviceList extends React.Component {
           renderItem={({ item }) => (
             <View style={home_screen_list.row}>
               <View style={home_screen_list.row_cell_timeplace}>
-                {item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                    (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-              </View>
+              {item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
+                      item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
+                </View>
               <View style={home_screen_list.row_cell_devicename}>
                 <Text>{item.devicename}</Text>
               </View>
