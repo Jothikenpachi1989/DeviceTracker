@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Image} from 'react-native';
-import { Button, Icon, ListItem, Card} from 'react-native-elements';
+import { Button, Icon, Card} from 'react-native-elements';
 import { TouchableOpacity, Linking, PermissionsAndroid } from 'react-native';
-import { CameraKitCameraScreen, } from 'react-native-camera-kit';
+import { CameraKitCameraScreen } from 'react-native-camera-kit';
 import Modal from "react-native-modal";
 
 var SQlite = require('react-native-sqlite-storage')
@@ -83,21 +83,32 @@ export default class ScanPage extends React.Component {
       that.setState({ Start_Scanner: true });
     }
   }
-  //QR Scanner method after code captured.
   onQR_Code_Scan_Done = (QR_Code) => {
-    alert("this is waste" + QR_Code);
+   this.setState({ QR_Code_Value: QR_Code });
+    this.setState({ Start_Scanner: false });
+    if(this.state.flag == true){
+      
+    }
+    else{
+      this.setState({Person_Code : QR_Code});
+      alert(this.state.Person_Code + " " + QR_Code);
+    }
+  }
+  //QR Scanner method after code captured.
+  onQR_Code_Scan_Done_1 = (QR_Code) => {
     this.setState({ QR_Code_Value: QR_Code });
     this.setState({ Start_Scanner: false });
     if(!this.state.flag){
       this.setState({Person_Code : QR_Code});
+      alert(this.state.Person_Code + " " + QR_Code);
       this.validatePersonQRCode(this.state.Person_Code);
-    if(!this.state.AuthSuccess){
-        alert("Please scan valid Person QR code to authenticate.")
-        this.setState({flag: false});
-      }
-      else{
-        this.setState({flag: true});
-      }
+        if(!this.state.AuthSuccess){
+          alert("Please scan valid Person QR code to authenticate.")
+          this.setState({flag: false});
+        }
+        else{
+          this.setState({flag: true});
+        }
     } 
     else{
       this.setState({flag: false});
@@ -131,8 +142,7 @@ validatePersonQRCode=(PersonCode)=>{
         if(results.rows.length > 0){
           this.setState({AuthSuccess : true});
           this.setState({PersonName : results.rows.item(0).firstname + " " + results.rows.item(0).lastname});
-          //this.state({Person_Code: tempStr[1]});
-             if(results.rows.item(0).isadmin == 'y'){
+            if(results.rows.item(0).isadmin == 'y'){
               this.setState({isAdmin : true});
             }
         }
