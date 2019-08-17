@@ -4,14 +4,11 @@ import { Button, Icon, ListItem, Card} from 'react-native-elements';
 import { TouchableOpacity, Linking, PermissionsAndroid } from 'react-native';
 import { CameraKitCameraScreen, } from 'react-native-camera-kit';
 import Modal from "react-native-modal";
-import DeviceList from './DeviceList';
-import UserPage from './UserPage';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 var Location = "";
-//var AuthSuccess= false, DeviceSuccess=false, NextDeivce = false;
-//var PersonName = "Lawrence", DeviceName = "Android - Samsung S9", validPerson = "False";
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -51,9 +48,9 @@ export default class ScanPage extends React.Component {
       NextDeivce: false,
       PersonName: '', 
       DeviceName: '', 
-      validPerson: 'False',
-      validDevice: 'False',
+      validDevice: false,
       deviceIssued: 'False',
+      userId: '',
     };
   }
   //QR scanner method
@@ -88,33 +85,33 @@ export default class ScanPage extends React.Component {
   }
   //QR Scanner method after code captured.
   onQR_Code_Scan_Done = (QR_Code) => {
+    alert("this is waste" + QR_Code);
     this.setState({ QR_Code_Value: QR_Code });
     this.setState({ Start_Scanner: false });
     if(!this.state.flag){
-      this.state.Person_Code = QR_Code;
-      const authflag = this.validatePersonQRCode(this.state.Person_Code);
-    if(authflag){
+      this.setState({Person_Code : QR_Code});
+      this.validatePersonQRCode(this.state.Person_Code);
+    if(!this.state.AuthSuccess){
         alert("Please scan valid Person QR code to authenticate.")
-        this.setState({AuthSuccess : false});
+        this.setState({flag: false});
       }
       else{
-        this.state.flag = true;
-        this.setState({AuthSuccess : true});
+        this.setState({flag: true});
       }
     } 
     else{
-      this.state.flag = false;
+      this.setState({flag: false});
       this.state.Device_Code = QR_Code;
-      authflag =this.validateDeviceQRCode(this.state.Device_Code);
-        if(authflag){
-          if(this.state.deviceIssued != "issued"){
-            alert("Please scan valid Device code to authenticate.")
-          } 
-          this.setState({DeviceSuccess : false});
-        }
+      this.validateDeviceQRCode(this.state.Device_Code);
+        if(this.state.DeviceSuccess){
+          if(this.state.deviceIssued == "issued"){
+            alert("Please scan avaliable device code to reserve.")
+          } else{
+            alert("Please scan valid Device code.")
+          }
+         }
         else{
           this.toggleModal();
-          this.setState({DeviceSuccess : true});
         }
     }
   }
@@ -123,33 +120,30 @@ export default class ScanPage extends React.Component {
     isModalVisible: false
   };
  //Database validation of Person Code and get Person details
-validatePersonQRCode=(Person_Code)=>{
-  var tempStr = Person_Code.split("_");
-  alert(Person_Code);
-  alert(tempStr[0] + " " + tempStr[1]);
-  if(tempStr[3] == "Che"){Location = "Chennai"}
-  if(tempStr[3] == "Hyd"){Location = "Hydrabad"}
-  db.transaction(tx => {
-    tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ? and location= ?', [tempStr[1],Location], (tx, results) => {
-      if(results.rows.length > 0){
-        this.setState({validPerson : true});
-        this.setState({AuthSuccess : true});
-        this.setState({PersonName : results.rows.item(0).firstname + " " + results.rows.item(0).lastname});
-        alert(this.state.PersonName);
-          if(results.rows.item(0).isadmin == 'y'){
-            this.setState({isAdmin : true});
-          }
-          return true;
-      }
-      else{
-        return false;
-      }
-    });
-  });
+validatePersonQRCode=(PersonCode)=>{
+  //var regex=/([a-zA-Z]{3}[_][a-zA-Z]{3}[-][0-9]{1}[_][a-zA-Z]{3}[_][A-Z]{3})/;
+  var tempStr = PersonCode.split("_");
+    if(tempStr[3] == "Che"){Location = "Chennai"}
+    else if(tempStr[3] == "Hyd"){Location = "Hydrabad"}
+    this.setState({userId: tempStr[1]});
+   db.transaction(tx => {
+      tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ? and location= ?', [tempStr[1],Location], (tx, results) => {
+        if(results.rows.length > 0){
+          this.setState({AuthSuccess : true});
+          this.setState({PersonName : results.rows.item(0).firstname + " " + results.rows.item(0).lastname});
+          //this.state({Person_Code: tempStr[1]});
+             if(results.rows.item(0).isadmin == 'y'){
+              this.setState({isAdmin : true});
+            }
+        }
+        else{
+          this.setState({AuthSuccess : false});
+        }
+      });
+    });  
 }
 //Database validation of Device Code
 validateDeviceQRCode=(Device_Code)=>{
-  //alert(Device_Code);
   db.transaction(tx => {
     tx.executeSql('select devicename, devicestatus, devicetype from devices WHERE assetid =?', [Device_Code], (tx, results) => {
      if(results.rows.length > 0){
@@ -160,13 +154,11 @@ validateDeviceQRCode=(Device_Code)=>{
           alert("This device is already issued. Please scan other devices.")
           this.setState({deviceIssued: "True"});
           this.setState({DeviceSuccess : false});
-          return false;
         }
-          return true;
       }
       else{
         this.setState({validDevice : false});
-        return false;
+        this.setState({DeviceSuccess : false});
       }
     });
   });
@@ -180,11 +172,11 @@ validateDeviceQRCode=(Device_Code)=>{
 navigateToUserPage=()=>{
   this.setState({ isModalVisible: !this.state.isModalVisible });
   this.state.DeviceSuccess = false;
-  this.state.Person_Code = "";
   this.state.Device_Code = "";
   this.state.flag = false;
   this.state.AuthSuccess= false;
-   this.props.navigation.navigate('UserPage');
+   this.props.navigation.navigate('UserPage',{itemId : this.state.userId});
+   this.state.Person_Code = "";
 }
 //Scan more devices from pop up
 scanmore=()=>{
