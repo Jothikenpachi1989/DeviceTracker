@@ -40,7 +40,7 @@ export default class HomePage extends React.Component {
           icon={<Icon name='md-qr-scanner' color='#ffffff' />}
           backgroundColor='#03A9F4'
           buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-          onPress={() => nav.navigate('Scan')}
+          onPress={() => nav.navigate('PersonScan')}
           title='SCAN NOW' />
       </Card>
      

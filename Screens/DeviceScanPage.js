@@ -7,7 +7,7 @@ import Modal from "react-native-modal";
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-var Location = "";
+var Location = "", PersonName = "", userId="";
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -15,9 +15,9 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-export default class ScanPage extends React.Component {
+export default class DeviceScanPage extends React.Component {
   static navigationOptions = {
-    title: 'Scan code',
+    title: 'Device Scan code',
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -34,24 +34,36 @@ export default class ScanPage extends React.Component {
       />
     ),
   };
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       QR_Code_Value: '',
       Start_Scanner: false,
-      Person_Code: '',
-      isAdmin: false,
       Device_Code: '',
-      flag: false,
-      AuthSuccess: false, 
+      AuthSuccess: true, 
       DeviceSuccess: false, 
       NextDeivce: false,
-      PersonName: '', 
       DeviceName: '', 
       validDevice: false,
       deviceIssued: 'False',
-      userId: '',
+      isAdmin: false,
     };
+    /*this.state = {
+      userId: props.navigation.state.params.itemId,
+    }*/
+   userId = this.props.navigation.getParam('itemId', '');
+   PersonName = this.props.navigation.getParam('name','');
+   /* db.transaction(tx => {
+      tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ?', [this.props.navigation.getParam('itemId', '')], (tx, results) => {
+        if(results.rows.length > 0){
+          PersonName = results.rows.item(0).firstname + " " + results.rows.item(0).lastname;
+            if(results.rows.item(0).isadmin == 'y'){
+              isAdmin = true;
+            }
+            this.setState({AuthSuccess:true});
+        }
+      });
+    });  */
   }
   //QR scanner method
   open_QR_Code_Scanner=()=> {
@@ -83,34 +95,12 @@ export default class ScanPage extends React.Component {
       that.setState({ Start_Scanner: true });
     }
   }
-  onQR_Code_Scan_Done = (QR_Code) => {
-   this.setState({ QR_Code_Value: QR_Code });
-    this.setState({ Start_Scanner: false });
-    if(this.state.flag == true){
-      
-    }
-    else{
-      this.setState({Person_Code : QR_Code});
-      alert(this.state.Person_Code + " " + QR_Code);
-    }
-  }
+  
   //QR Scanner method after code captured.
-  onQR_Code_Scan_Done_1 = (QR_Code) => {
+  onQR_Code_Scan_Done = (QR_Code) => {
     this.setState({ QR_Code_Value: QR_Code });
     this.setState({ Start_Scanner: false });
-    if(!this.state.flag){
-      this.setState({Person_Code : QR_Code});
-      alert(this.state.Person_Code + " " + QR_Code);
-      this.validatePersonQRCode(this.state.Person_Code);
-        if(!this.state.AuthSuccess){
-          alert("Please scan valid Person QR code to authenticate.")
-          this.setState({flag: false});
-        }
-        else{
-          this.setState({flag: true});
-        }
-    } 
-    else{
+   
       this.setState({flag: false});
       this.state.Device_Code = QR_Code;
       this.validateDeviceQRCode(this.state.Device_Code);
@@ -124,34 +114,11 @@ export default class ScanPage extends React.Component {
         else{
           this.toggleModal();
         }
-    }
   }
  
   state = {
     isModalVisible: false
   };
- //Database validation of Person Code and get Person details
-validatePersonQRCode=(PersonCode)=>{
-  //var regex=/([a-zA-Z]{3}[_][a-zA-Z]{3}[-][0-9]{1}[_][a-zA-Z]{3}[_][A-Z]{3})/;
-  var tempStr = PersonCode.split("_");
-    if(tempStr[3] == "Che"){Location = "Chennai"}
-    else if(tempStr[3] == "Hyd"){Location = "Hydrabad"}
-    this.setState({userId: tempStr[1]});
-   db.transaction(tx => {
-      tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ? and location= ?', [tempStr[1],Location], (tx, results) => {
-        if(results.rows.length > 0){
-          this.setState({AuthSuccess : true});
-          this.setState({PersonName : results.rows.item(0).firstname + " " + results.rows.item(0).lastname});
-            if(results.rows.item(0).isadmin == 'y'){
-              this.setState({isAdmin : true});
-            }
-        }
-        else{
-          this.setState({AuthSuccess : false});
-        }
-      });
-    });  
-}
 //Database validation of Device Code
 validateDeviceQRCode=(Device_Code)=>{
   db.transaction(tx => {
@@ -175,7 +142,6 @@ validateDeviceQRCode=(Device_Code)=>{
 }
   toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
-    //this.state.DeviceSuccess = false;
   };
 
 //Navigation from Scan page to User Page when tap on Ok in the success popup
@@ -185,7 +151,7 @@ navigateToUserPage=()=>{
   this.state.Device_Code = "";
   this.state.flag = false;
   this.state.AuthSuccess= false;
-   this.props.navigation.navigate('UserPage',{itemId : this.state.userId});
+   this.props.navigation.navigate('UserPage',{itemId : userId});
    this.state.Person_Code = "";
 }
 //Scan more devices from pop up
@@ -196,32 +162,19 @@ scanmore=()=>{
   this.state.Device_Code = "";
   this.state.flag = true;
   this.state.AuthSuccess= true;
-   //this.props.navigation.navigate('UserPage');
 }
   render() {
    
     const nav = this.props.navigation;
+     //const userid = nav.getParam('itemId', '');  
+      
     if (!this.state.Start_Scanner) {
       
       return (
         <View style={styles.MainContainer}>
-          {!this.state.flag && !this.state.DeviceSuccess?
+          {this.state.AuthSuccess ?
               <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
-                <Image source={require('../images/scan-icon.png')} />
-                <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Person QR Code</Text> 
-                <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>User Login</Text>   
-                <TouchableOpacity
-                  onPress={this.open_QR_Code_Scanner}
-                  style={styles.button}>
-                    <Text style={{ color: '#FFF', fontSize: 14 }}>
-                      Scan Now
-                    </Text>
-                </TouchableOpacity>
-              </View>:null
-          }
-          {this.state.flag && this.state.AuthSuccess ?
-              <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
-              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {this.state.PersonName}</Text> 
+              <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {PersonName}</Text> 
               <Image source={require('../images/scan-icon.png')} />
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device</Text> 
               <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>Device Issues or Return</Text> 
@@ -243,7 +196,7 @@ scanmore=()=>{
                 titleStyle={{fontSize: 18,}}
                 >
                 <Text style={{marginBottom: 10,}}>
-                  {this.state.DeviceName} is now issued to {this.state.PersonName}.
+                  {this.state.DeviceName} is now issued to {PersonName}.
                   </Text>
                   <View style={{flexDirection: 'column', alignItems: 'center',}}>
                     
@@ -267,17 +220,6 @@ scanmore=()=>{
             </View>
             :null
             }
-
-          {this.state.QR_Code_Value.includes("QAASS") ?
-            <TouchableOpacity
-              onPress={this.openLink_in_rowser}
-              style={styles.button}>
-              <Text style={{ color: '#FFF', fontSize: 14 }}>Open Link in default Browser</Text>
-            </TouchableOpacity> : null
-          }
-                
-          
- 
         </View>
         
       );

@@ -9,7 +9,8 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Button} from 'react-native';
 import { connect } from 'react-redux';
 import { addUser } from './actions/user';
-import ScanPage from './Screens/ScanPage';
+import PersonScanPage from './Screens/PersonScanPage';
+import DeviceScanPage from './Screens/DeviceScanPage';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import DeviceList from './Screens/DeviceList';
 import HomePage from './Screens/HomePage'
@@ -85,7 +86,8 @@ const AppNavigator = createStackNavigator(
   {
     HomeScreen: { screen: HomePage },
     DeviceList: { screen: DeviceList},
-    Scan: { screen: ScanPage},
+    PersonScan: { screen: PersonScanPage},
+    DeviceScanPage: { screen: DeviceScanPage},
     UserPage: {screen: UserPage},
   },
   {

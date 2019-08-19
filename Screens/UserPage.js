@@ -122,7 +122,7 @@ export default class UserPage extends React.Component {
         
         <View style={ customstyle.bottomView} >
         <Button
-         onPress={() => this.props.navigation.navigate('Scan')}
+         onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname})}
             backgroundColor='#03A9F4'
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:200,}}
             raised
