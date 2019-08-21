@@ -185,6 +185,13 @@ scanmore=()=>{
                     Scan Now
                   </Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.navigateToUserPage}
+                style={styles.button}>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>
+                    View My Devices
+                  </Text>
+              </TouchableOpacity>
               </View>:null
           }
           {this.state.DeviceSuccess ? 

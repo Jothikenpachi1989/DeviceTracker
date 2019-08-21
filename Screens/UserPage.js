@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, FlatList} from 'react-native';
+import {Platform, StyleSheet, Text, View, FlatList, Alert} from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import { Avatar, Badge } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
@@ -30,6 +30,8 @@ export default class UserPage extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      activeRowKey: null,
+      deleteRowKey: null,
       FlatListItems: [],
     };
     this.state = {
@@ -64,28 +66,38 @@ export default class UserPage extends React.Component {
       <View style={{ height: 0.2, width: '100%', backgroundColor: '#808080' }} />
     );
   };
+  RefreshFlatList = () => {
+    
+  }
   render() {    
-    const swipeoutBtns = [
-      {
-        component: (
-          <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-              }}
-          >
-            <Text>Return</Text>
-          </View>
-        ),
-        backgroundColor: '#f08080',
-        underlayColor: 'rgba(0, 0, 0, 1, 0.6)',
-        onPress: () => {
-          alert('Remove me');
-        },
+    const swipeSettings={
+      onClose: (secId, rowId, direction)=>{
+        this.setState({activeRowKey: null});
       },
-    ];
+      onOpen: (secId, rowId, direction)=>{
+        this.setState({activeRowKey: this.props.index});
+      },
+      right:[
+        {
+          onPress: () => {
+            Alert.alert(
+              'Alert',
+              'Are you sure you want to return this device ?',
+              [
+                {text: 'No', onPress: () => console.log('cancel pressed'), style: 'cancel'},
+                {text: 'Yes', onPress: () =>{
+                  
+                }},
+              ],
+              {cancelable: true}
+            );
+          },
+          text: 'Return', type: 'delete'
+        }
+      ],
+      rowId: this.props.index,
+      sectionId: 1,
+    };
   return (
     <View style={customstyle.container}>
       <View style={customstyle.userRow}>
@@ -98,12 +110,12 @@ export default class UserPage extends React.Component {
           <Badge value={"# of devices : " + this.state.nofdevices} status="success"></Badge>
            </View>
         
-        <FlatList
+        <FlatList  
            data={this.state.FlatListItems}
             ItemSeparatorComponent={this.ListViewItemSeparator}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Swipeout right={swipeoutBtns} autoClose={true} backgroundColor="#f5fffa">
+            renderItem={({ item, index }) => (
+              <Swipeout {...swipeSettings} autoClose={true} backgroundColor="#f5fffa" item={item} index={index} >
               <View style={customstyle.row}>
                 <View style={customstyle.row_cell_icon}>
                   {item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
@@ -114,6 +126,9 @@ export default class UserPage extends React.Component {
                 </View>
                 <View style={customstyle.row_cell_place}>
                   <Text>{item.team}</Text>
+                </View>
+                <View style={customstyle.row_cell_place}>
+                  <Text>{item.assetid}</Text>
                 </View>
               </View>
               </Swipeout>
