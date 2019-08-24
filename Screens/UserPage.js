@@ -32,6 +32,7 @@ export default class UserPage extends React.Component {
     this.state = {
       activeRowKey: null,
       deleteRowKey: null,
+      selectedDevice: "",
       FlatListItems: [],
     };
     this.state = {
@@ -71,18 +72,12 @@ export default class UserPage extends React.Component {
   }
   render() {    
     const swipeSettings={
-      onClose: (secId, rowId, direction)=>{
-        this.setState({activeRowKey: null});
-      },
-      onOpen: (secId, rowId, direction)=>{
-        this.setState({activeRowKey: this.props.index});
-      },
       right:[
         {
           onPress: () => {
             Alert.alert(
               'Alert',
-              'Are you sure you want to return this device ?',
+              'Are you sure you want to return this device ? ' + this.props.index,
               [
                 {text: 'No', onPress: () => console.log('cancel pressed'), style: 'cancel'},
                 {text: 'Yes', onPress: () =>{
@@ -124,11 +119,11 @@ export default class UserPage extends React.Component {
                 <View style={customstyle.row_cell_devicename}>
                   <Text>{item.devicename}</Text>
                 </View>
-                <View style={customstyle.row_cell_place}>
-                  <Text>{item.team}</Text>
+                <View style={customstyle.row_cell_devicename}>
+                  <Text>{item.assetid}</Text>
                 </View>
                 <View style={customstyle.row_cell_place}>
-                  <Text>{item.assetid}</Text>
+                  <Text>{item.team}</Text>
                 </View>
               </View>
               </Swipeout>
