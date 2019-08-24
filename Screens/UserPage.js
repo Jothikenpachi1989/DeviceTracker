@@ -72,27 +72,54 @@ export default class UserPage extends React.Component {
       });
     });
   }
-  ListViewItemSeparator = () => {
-    return (
-      <View style={{ height: 0.2, width: '100%', backgroundColor: '#808080' }} />
-    );
-  };
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
 			rowMap[rowKey].closeRow();
 		}
 	}
-	deleteRow(rowMap, rowKey) {
+	deleteRow(rowMap, rowKey,mobassetid) {
 		this.closeRow(rowMap, rowKey);
 		const newData = [...this.state.listViewData];
-		const prevIndex = this.state.listViewData.findIndex(item => item.key === rowKey);
+    const prevIndex = this.state.listViewData.findIndex(item => item.key === rowKey);
+    this.updateDeviceEntry(mobassetid);
 		newData.splice(prevIndex, 1);
 		this.setState({listViewData: newData});
 	}
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
 		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
-	}
+  }
+  updateDeviceEntry = (mobassetid) => {
+    var flag = false;
+        db.transaction((tx)=> {
+            tx.executeSql(
+              'update entries SET returntime = CURRENT_TIMESTAMP where assetid = ?',
+              [mobassetid],
+              (tx, results) => {
+                console.log('Results',results.rowsAffected);
+                if(results.rowsAffected>0){
+                  flag = true;
+                }else{
+                  alert('Return Failed');
+                }
+              }
+            );
+          });
+          db.transaction((tx)=> {
+            tx.executeSql(
+              'update devices SET devicestatus="returned" WHERE assetid = ?',
+              [mobassetid],
+              (tx, results) => {
+                if(results.rowsAffected>0 && flag ){
+                  alert('Device returned successfully');
+                }else{
+                  alert('Return Failed');
+                }
+              }
+            );
+          });
+          
+  };
   render() {    
   return (
     <View style={customstyle.container}>
@@ -135,7 +162,7 @@ export default class UserPage extends React.Component {
 						)}
 						renderHiddenItem={ (data, rowMap) => (
 							<View style={customstyle.rowBack}>
-								<TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.item.key) }>
+								<TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.deleteRow(rowMap, data.item.key,data.item.assetid) }>
                 <Text style={customstyle.backTextWhite}>Return</Text>
 								</TouchableOpacity>
 							</View>

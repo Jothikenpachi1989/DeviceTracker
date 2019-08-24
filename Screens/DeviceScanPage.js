@@ -53,17 +53,7 @@ export default class DeviceScanPage extends React.Component {
     }*/
    userId = this.props.navigation.getParam('itemId', '');
    PersonName = this.props.navigation.getParam('name','');
-   /* db.transaction(tx => {
-      tx.executeSql('select firstname, lastname, isadmin from users WHERE userid = ?', [this.props.navigation.getParam('itemId', '')], (tx, results) => {
-        if(results.rows.length > 0){
-          PersonName = results.rows.item(0).firstname + " " + results.rows.item(0).lastname;
-            if(results.rows.item(0).isadmin == 'y'){
-              isAdmin = true;
-            }
-            this.setState({AuthSuccess:true});
-        }
-      });
-    });  */
+   
   }
   //QR scanner method
   open_QR_Code_Scanner=()=> {
@@ -147,12 +137,15 @@ validateDeviceQRCode=(Device_Code)=>{
 //Navigation from Scan page to User Page when tap on Ok in the success popup
 navigateToUserPage=()=>{
   this.setState({ isModalVisible: !this.state.isModalVisible });
+  this.updateDeviceEntry(userId,this.state.Device_Code);
+}
+toUserPage=()=>{
   this.state.DeviceSuccess = false;
   this.state.Device_Code = "";
   this.state.flag = false;
   this.state.AuthSuccess= false;
-   this.props.navigation.navigate('UserPage',{itemId : userId});
-   this.state.Person_Code = "";
+  this.props.navigation.navigate('UserPage',{itemId : userId});
+  this.state.Person_Code = "";  
 }
 //Scan more devices from pop up
 scanmore=()=>{
@@ -163,6 +156,42 @@ scanmore=()=>{
   this.state.flag = true;
   this.state.AuthSuccess= true;
 }
+updateDeviceEntry = (userid, mobassetid) => {
+  var flag = false;
+      db.transaction((tx)=> {
+          tx.executeSql(
+            'Insert Into entries (assetid, devicename,userid,firstname,lastname,pickuptime) Select devices.assetid,devices.devicename,users.userid,users.firstname,users.lastname,CURRENT_TIMESTAMP from devices,users where users.userid = ? AND devices.assetid = ?',
+            [userid, mobassetid],
+            (tx, results) => {
+              console.log('Results',results.rowsAffected);
+              if(results.rowsAffected>0){
+                flag = true;
+              }else{
+                alert('Device Entry Failed');
+              }
+            }
+          );
+        });
+        db.transaction((tx)=> {
+          tx.executeSql(
+            'update devices SET devicestatus="issued" WHERE assetid = ?',
+            [mobassetid],
+            (tx, results) => {
+              if(results.rowsAffected>0 && flag ){
+                this.state.DeviceSuccess = false;
+                this.state.Device_Code = "";
+                this.state.flag = false;
+                this.state.AuthSuccess= false;
+                this.props.navigation.navigate('UserPage',{itemId : userId});
+                this.state.Person_Code = "";      
+              }else{
+                alert('Device Entry Failed');
+              }
+            }
+          );
+        });
+        
+};
   render() {
    
     const nav = this.props.navigation;
@@ -186,7 +215,7 @@ scanmore=()=>{
                   </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={this.navigateToUserPage}
+                onPress={this.toUserPage}
                 style={styles.button}>
                   <Text style={{ color: '#FFF', fontSize: 14 }}>
                     View My Devices
