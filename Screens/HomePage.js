@@ -9,7 +9,7 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-export default class HomePage extends React.Component {
+export default class HomePage_1 extends React.Component {
   static navigationOptions = {
     title: 'Welcome',
     headerTintColor: '#ffffff',
