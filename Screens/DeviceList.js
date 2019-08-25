@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, FlatList} from 'react-native';
 import { Button, Icon, SearchBar, Divider } from 'react-native-elements';
+import IssuedDeviceList from './IssuedDeviceList';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 
 export default class DeviceList extends React.Component {
-  static navigationOptions = {
+  static navigationOptions = ({navigation})=>({
     headerTitle: 'Device List',
     headerTintColor: '#ffffff',
       headerStyle: {
@@ -17,12 +18,12 @@ export default class DeviceList extends React.Component {
         fontSize: 18,
       },headerRight: (
       <Button
-        onPress={() => alert('This is a button!')}
+        onPress={() => navigation.navigate('IssuedDeviceList')}
         icon={<Icon name='filter-list' color='#ffffff' />}
         color="#fff"
       />
     ),
-  };
+  });
   state = {
     search: '',
   };

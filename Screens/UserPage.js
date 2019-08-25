@@ -11,7 +11,7 @@ var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datas
 var profilepic = '../images/profile-icon.png';
 
 export default class UserPage extends React.Component {
-  static navigationOptions = {
+  static navigationOptions = ({navigation})=>({
     headerTitle: 'My Profile',
     headerTintColor: '#ffffff',
       headerStyle: {
@@ -22,13 +22,25 @@ export default class UserPage extends React.Component {
       headerTitleStyle: {
         fontSize: 18,
       },
+      headerLeft: null,
     headerRight: (
        <Button
-       onPress={() => {this.props.navigation.navigate('HomeScreen')}}
+       onPress={() => {
+        Alert.alert(
+          'Alert',
+          'Are you sure you want to log out?',
+          [
+            {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel',},
+            {text: 'Yes', onPress: () => navigation.navigate('HomeScreen')},
+          ],
+          {cancelable: false},
+        ); 
+       }}
         icon={<Icon name='open-in-new' size={25} color='#ffffff' />}
+        title='Log out'
       />
     ),
-  };
+  });
   constructor (props) {
     super(props)
     this.state = {
@@ -72,6 +84,17 @@ export default class UserPage extends React.Component {
       });
     });
   }
+  navigateToHome=()=>{
+    Alert.alert(
+      'Alert',
+      'Are you sure you want to log out?',
+      [
+        {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel',},
+        {text: 'Yes', onPress: () => this.props.navigation.navigate('HomeScreen')},
+      ],
+      {cancelable: false},
+    ); 
+  }
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
 			rowMap[rowKey].closeRow();
@@ -93,7 +116,7 @@ export default class UserPage extends React.Component {
     var flag = false;
         db.transaction((tx)=> {
             tx.executeSql(
-              'update entries SET returntime = CURRENT_TIMESTAMP where assetid = ?',
+              'update entries SET returntime = CURRENT_TIMESTAMP where assetid = ? AND returntime is NULL',
               [mobassetid],
               (tx, results) => {
                 console.log('Results',results.rowsAffected);
