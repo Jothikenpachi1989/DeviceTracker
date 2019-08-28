@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, Image, Alert} from 'react-native';
 import { Button, Icon, Card} from 'react-native-elements';
 import { TouchableOpacity, Linking, PermissionsAndroid } from 'react-native';
-import { CameraKitCameraScreen } from 'react-native-camera-kit';
-import Modal from "react-native-modal";
+import { CameraKitCameraScreen } from 'react-native-camera-kit'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -92,17 +91,13 @@ export default class DeviceScanPage extends React.Component {
       this.state.Device_Code = QR_Code;
       this.validateDeviceQRCode(this.state.Device_Code);
   }
- 
-  state = {
-    isModalVisible: false
-  };
 //Database validation of Device Code
 validateDeviceQRCode=(Device_Code)=>{
   db.transaction(tx => {
     tx.executeSql('select devicename, devicestatus, devicetype, assetid from devices WHERE assetid =?', [Device_Code], (tx, results) => {
      if(results.rows.length > 0){
         this.setState({validDevice : true});
-        this.setState({DeviceName : results.rows.item(0).devicename + "-" + results.rows.item(0).assertid});
+        this.setState({DeviceName : results.rows.item(0).devicename + "-" + results.rows.item(0).assetid});
         if(results.rows.item(0).devicestatus == "issued"){
           alert("This device is already issued. Please scan other devices.")
           this.setState({deviceIssued: "True"});
@@ -169,16 +164,7 @@ updateDeviceEntry = (userid, mobassetid) => {
         });
         
 };
-toggleModal = () => {
-  this.setState({ isModalVisible: !this.state.isModalVisible });
-};
-
 //Navigation from Scan page to User Page when tap on Ok in the success popup
-navigateToUserPage=()=>{
-  //this.setState({ isModalVisible: !this.state.isModalVisible });
-  //this.toggleModal();
-  this.props.navigation.navigate('UserPage',{itemId : userId});
-}
 toUserPage=()=>{
   this.setState({DeviceSuccess : false});
   this.state.Device_Code = "";
@@ -187,7 +173,6 @@ toUserPage=()=>{
 }
 //Scan more devices from pop up
 scanmore=()=>{
-  this.setState({ isModalVisible: !this.state.isModalVisible });
   this.setState({DeviceSuccess : false});
   this.state.Device_Code = "";
   this.state.AuthSuccess= true;
@@ -201,8 +186,7 @@ scanmore=()=>{
       
       return (
         <View style={styles.MainContainer}>
-          {this.state.AuthSuccess ?
-              <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
+            <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {PersonName}</Text> 
               <Image source={require('../images/scan-icon.png')} />
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device</Text> 
@@ -221,41 +205,7 @@ scanmore=()=>{
                     View My Devices
                   </Text>
               </TouchableOpacity>
-              </View>:null
-          }
-          {this.state.DeviceSuccess ? 
-              <View style={{ flex: 1 }}>
-              
-              <Modal isVisible={this.state.isModalVisible}>
-              <Card containerStyle={{alignItems: 'center', }}
-                title='Success'
-                titleStyle={{fontSize: 18,}}
-                >
-                <Text style={{marginBottom: 10,}}>
-                  {this.state.DeviceName} is now issued to {PersonName}.
-                  </Text>
-                  <View style={{flexDirection: 'column', alignItems: 'center',}}>
-                    
-                    <Button
-                      onPress={this.scanmore}
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:150,}}
-                      raised
-                      title='Scan More' />
-
-                      <Button
-                      onPress =  {this.navigateToUserPage}
-                      buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0,width:150, backgroundColor: '#ffffff',}}
-                      title='OK' 
-                      type = 'clear'
-                      raised
-                      titleStyle={{color: '#616161'}}/>
-                  </View>
-              </Card>
-              </Modal>
             </View>
-            :null
-            }
         </View>
         
       );

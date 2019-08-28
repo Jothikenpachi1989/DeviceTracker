@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, FlatList, Alert} from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import { Avatar, Badge } from 'react-native-elements';
-import Swipeout from 'react-native-swipeout';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
