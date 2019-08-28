@@ -18,7 +18,7 @@ export default class DeviceList extends React.Component {
         fontSize: 18,
       },headerRight: (
       <Button
-        onPress={() => navigation.navigate('IssuedDeviceList')}
+        onPress={() => navigation.navigate('EntriesDeviceList')}
         icon={<Icon name='filter-list' color='#ffffff' />}
         color="#fff"
       />

@@ -114,10 +114,17 @@ export default class UserPage extends React.Component {
   }
   updateDeviceEntry = (mobassetid) => {
     var flag = false;
+    var date = new Date().getDate(); //Current Date
+    var month = new Date().getMonth() + 1; //Current Month
+    var year = new Date().getFullYear(); //Current Year
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+    var sec = new Date().getSeconds(); //Current Seconds
+    var timestamp = year + '-' + month + '-' + date + ' ' + hours + ':' + min + ':' + sec;
         db.transaction((tx)=> {
             tx.executeSql(
-              'update entries SET returntime = CURRENT_TIMESTAMP where assetid = ? AND returntime is NULL',
-              [mobassetid],
+              'update entries SET returntime = ? where assetid = ? AND returntime is NULL',
+              [timestamp,mobassetid],
               (tx, results) => {
                 console.log('Results',results.rowsAffected);
                 if(results.rowsAffected>0){
