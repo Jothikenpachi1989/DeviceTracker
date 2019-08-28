@@ -4,9 +4,9 @@ import { Button, Icon, SearchBar, Divider } from 'react-native-elements';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 
-export default class IssuedDeviceList extends React.Component {
+export default class EntriesDeviceList extends React.Component {
   static navigationOptions = ({navigation})=>({
-    headerTitle: 'Issued Device List',
+    headerTitle: 'Entries Device List',
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -33,7 +33,7 @@ export default class IssuedDeviceList extends React.Component {
       FlatListItems: [],
     };
     db.transaction(tx => {
-      tx.executeSql('select devicetype, devicename, assetid,firstname, location, team, pickuptime from issued_devices_details', [], (tx, results) => {
+      tx.executeSql('select assetid, devicename,firstname, pickuptime,returntime from entries', [], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
@@ -72,10 +72,10 @@ export default class IssuedDeviceList extends React.Component {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={home_screen_list.row}>
-              <View style={home_screen_list.row_cell_timeplace}>
+              {/* <View style={home_screen_list.row_cell_timeplace}>
               {item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
                       item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-                </View>
+                </View> */}
               <View style={home_screen_list.row_cell_devicename}>
                 <Text>{item.devicename}</Text>
                 <Text>{item.assetid}</Text>
@@ -84,11 +84,10 @@ export default class IssuedDeviceList extends React.Component {
                 <Text>{item.firstname}</Text>
               </View>
               <View style={home_screen_list.row_cell_place}>
-                <Text>{item.team}</Text>
-                <Text>{item.location}</Text>
+                <Text>{item.pickuptime}</Text>
               </View>
               <View style={home_screen_list.row_cell_place}>
-                <Text>{item.pickuptime}</Text>
+                <Text>{item.returntime}</Text>
               </View>
             </View>
             
