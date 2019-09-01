@@ -44,7 +44,7 @@ export default class UserPage extends React.Component {
     super(props)
     this.state = {
       listType: 'FlatList',
-			listViewData: [],// Array(20).fill('').map((_,i) => ({key: `${i}`, Platform: `Platform #${i}`, Devicename: `Device #${i}`})),
+			listViewData: [],
     };
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
