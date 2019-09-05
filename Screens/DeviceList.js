@@ -191,10 +191,10 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
           <Overlay
             isVisible={this.state.isVisible}
             onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#808B96'}}>
-            <View style={{flex: 0.6,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB'}}>
-              <Text style={customstyle.subheader}>Device Details</Text>
-            </View>
+            <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+              <View style={{flex: 0.6,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+                <Text style={customstyle.subheader}>Device Details</Text>
+              </View>
               <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
                   {<View style={customstyle.row_details}>
                     <Text style={customstyle.row_label}>Device Type</Text>
@@ -206,31 +206,31 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
                     <Text style={customstyle.row_value}>{this.state.device_devicename}</Text>
                     </View>
                   <View style={customstyle.row_details}>
-                  <Text style={customstyle.row_label}>Device Status</Text>
-                  {this.state.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
-                  (<Text style={customstyle.row_value}>{this.state.device_devicestatus}</Text> ) }
+                    <Text style={customstyle.row_label}>Device Status</Text>
+                    {this.state.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
+                    (<Text style={customstyle.row_value}>{this.state.device_devicestatus}</Text> ) }
                   </View>
                   <View style={customstyle.row_details}>
-                  <Text style={customstyle.row_label}>Team</Text>
-                    <Text style={customstyle.row_value}>{this.state.device_team}</Text>
-                  </View>
+                    <Text style={customstyle.row_label}>Team</Text>
+                      <Text style={customstyle.row_value}>{this.state.device_team}</Text>
+                    </View>
                   <View style={customstyle.row_details}>
-                  <Text style={customstyle.row_label}>Location</Text>
+                    <Text style={customstyle.row_label}>Location</Text>
                     <Text style={customstyle.row_value}>{this.state.device_location}</Text>
                   </View>
                   <View style={customstyle.row_details}>
-                  <Text style={customstyle.row_label}>Device active?</Text>
+                    <Text style={customstyle.row_label}>Device active?</Text>
                     <Text style={customstyle.row_value}>{this.state.device_isactive}</Text>
                   </View>   
               </View>
-                {this.state.device_devicestatus != "issued"?
+            {this.state.device_devicestatus != "issued"?
             <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}>
                 <View style={customstyle.row_details}><Text>This device is not allocated. To reserve, Go to HomePage and Tap on Scan Now.</Text></View></View>:
                   <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}> 
-                    <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB'}}>
+                    <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB',borderBottomWidth: 1, borderBottomColor:'#D5D8DC',borderTopWidth: 1, borderTopColor:'#D5D8DC'}}>
                       <Text style={customstyle.subheader}>Allocation Details</Text>
                     </View>
-                    <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between'}}>
+                    <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
                     <View style={customstyle.row_details}>
                       <Text style={customstyle.row_label}>Name</Text>
                       <Text style={customstyle.row_value}>{this.state.user_name}</Text>
@@ -245,12 +245,12 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
                     </View>
                     </View>
                   </View>}
-            <View style={{flex: 1, flexDirection:'column',alignContent: 'center', justifyContent: 'flex-end', paddingBottom: 5}}>
+            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
               <Button
               backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:40}}
+              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
               onPress={() => {this.setState({ isVisible: false })}}
-              title='Done' />
+              title='DONE' />
             </View>
             </View>
           </Overlay>: null
@@ -268,6 +268,7 @@ const customstyle = StyleSheet.create(
       marginBottom: 10,
     },
     subheader:{
+      elevation: 1,
       fontSize: 18,
       alignContent: 'center',
       fontWeight: 'bold',
@@ -293,8 +294,8 @@ const customstyle = StyleSheet.create(
       flex: 0,
     }, 
     row_details: {
-      elevation: 1,
-      borderRadius: 2,
+      borderRadius: 1,
+      borderColor: '#D5D8DC',
       backgroundColor: '#ffffff',
       flex: 1,
       flexDirection: 'row',  // main axis
