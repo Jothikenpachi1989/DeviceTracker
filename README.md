@@ -13,3 +13,4 @@
 * npm i react-native-dropdown-menu --save
 * npm install --save react-native-swipe-list-view
 * npm install --save react-native-swipeout
+* npm install --save react-native-modal
