@@ -6,7 +6,8 @@ import DropdownMenu from 'react-native-dropdown-menu';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-
+var data = [["All Devices", "Android", "iPhone", "iPad"], ["All", "Available","issued"]];
+   
 export default class DeviceList extends React.Component {
   static navigationOptions = ({navigation})=>({
     headerTitle: 'Device List',
@@ -26,16 +27,15 @@ export default class DeviceList extends React.Component {
       />
     ),
   });
-  state = {
-    search: '',
-  };
   constructor () {
     super()
     this.state = {
       listType: 'FlatList',
       listViewData: [],
       isVisible: false,
-    };
+      deviceType: "All", 
+      deviceAvailability: "All",
+    }
     this.state={
       device_assetid: "",
       device_devicename: "",
@@ -73,11 +73,14 @@ export default class DeviceList extends React.Component {
       });
     });
   }
-  ListViewItemSeparator = () => {
-    return (
-      <View style={{ height: 0.2, width: '100%', backgroundColor: '#808080' }} />
-    );
-  };
+  updateTablebyFilter=(selection, row)=>{
+    if(selection==0){
+      this.setState({deviceType: data[selection][row]})
+    }else if(selection==1){
+      this.setState({deviceAvailability: data[selection][row]})
+    }
+   alert(this.state.deviceType + " " + this.state.deviceAvailability);
+  }
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
 			rowMap[rowKey].closeRow();
@@ -131,11 +134,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
   this.setState({isVisible: true});
 }
   render() {
-    const { selectedIndex } = this.state
-    const { search } = this.state;
-    var data = [["All Devices", "Android", "iPhone", "iPad"], ["All Location", "Chennai","Hydrabad"], ["All", "Available","issued"]];
-    
-  return (
+   return (
 
     <View style={{flex: 1}}>
         <DropdownMenu
@@ -143,8 +142,13 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
             bgColor={'#EBF5FB'}
             tintColor={'#666666'}
             activityTintColor={'green'}
-            handler={(selection, row) => this.setState({text: data[selection][row]})}
-            data={data}>
+            handler={(selection, row) => {
+              
+              this.updateTablebyFilter(selection, row);
+            }}
+            
+            data={data}
+            >
             <SwipeListView
               data={this.state.listViewData}
               keyExtractor={(item,index) => index.toString()}

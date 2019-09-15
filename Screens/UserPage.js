@@ -53,14 +53,16 @@ export default class UserPage extends React.Component {
     this.state = {
       id: props.navigation.state.params.itemId,
       uname: '',
+      isadmin: '',
       nofdevices: 0,
     }
     db.transaction(tx => {
-      tx.executeSql('SELECT firstname, lastname from users where userid = ?', [this.state.id], (tx, results) => {
+      tx.executeSql('SELECT firstname, lastname,isadmin from users where userid = ?', [this.state.id], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push(results.rows.item(i));
           this.setState({uname: results.rows.item(i).firstname + " " + results.rows.item(i).lastname});
+          this.setState({isadmin: results.rows.item(i).isadmin});
         }
       });
     });
@@ -206,7 +208,7 @@ export default class UserPage extends React.Component {
 
         <View style={ customstyle.bottomView} >
         <Button
-         onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname})}
+         onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname,admin:this.state.isadmin})}
             backgroundColor='#03A9F4'
             buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:200,}}
             raised

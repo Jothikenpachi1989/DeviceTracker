@@ -52,6 +52,7 @@ export default class DeviceScanPage extends React.Component {
     }*/
    userId = this.props.navigation.getParam('itemId', '');
    PersonName = this.props.navigation.getParam('name','');
+   admin = this.props.navigation.getParam('admin','');
   }
   //QR scanner method
   open_QR_Code_Scanner=()=> {

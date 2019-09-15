@@ -86,7 +86,7 @@ onQR_Code_Scan_Done = (QR_Code) => {
               isAdmin = true;
             }
             //alert(results.rows.item(0).userid + " " + this.state.Name);
-            this.props.navigation.navigate('DeviceScanPage',{itemId : results.rows.item(0).userid, name: (results.rows.item(0).firstname + " " + results.rows.item(0).lastname)});
+            this.props.navigation.navigate('DeviceScanPage',{itemId : results.rows.item(0).userid, name: (results.rows.item(0).firstname + " " + results.rows.item(0).lastname), admin: results.rows.item(0).isadmin});
         }
         else{
           alert("Please scan valid Person QR code to authenticate.")
