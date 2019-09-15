@@ -100,7 +100,7 @@ validateDeviceQRCode=(Device_Code)=>{
         this.setState({validDevice : true});
         this.setState({DeviceName : results.rows.item(0).devicename + "-" + results.rows.item(0).assetid});
         if(results.rows.item(0).devicestatus == "issued"){
-          alert("This device is already issued. Please scan other devices.")
+          alert("This device is already issued. Please scan other devices.");
           this.setState({deviceIssued: "True"});
           this.setState({DeviceSuccess : false});
         }else{
@@ -112,7 +112,7 @@ validateDeviceQRCode=(Device_Code)=>{
       else{
         this.setState({validDevice : false});
         this.setState({DeviceSuccess : false});
-        alert("Please scan valid Device code.")
+        alert("Please scan valid Device code.");
       }
     });
   });
@@ -172,6 +172,9 @@ toUserPage=()=>{
   this.state.AuthSuccess= true;
   this.props.navigation.navigate('UserPage',{itemId : userId}); 
 }
+toAdminPage=()=>{
+  this.props.navigation.navigate('AdminPage',{itemId : userId,PersonName: PersonName});
+}
 //Scan more devices from pop up
 scanmore=()=>{
   this.setState({DeviceSuccess : false});
@@ -206,6 +209,15 @@ scanmore=()=>{
                     View My Devices
                   </Text>
               </TouchableOpacity>
+              {admin=='y' ?
+              <TouchableOpacity
+              onPress={this.toAdminPage}
+              style={styles.button}>
+                <Text style={{ color: '#FFF', fontSize: 14 }}>
+                  Super User
+                </Text>
+            </TouchableOpacity>
+              :null}
             </View>
         </View>
         

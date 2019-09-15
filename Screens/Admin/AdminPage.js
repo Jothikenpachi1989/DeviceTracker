@@ -27,22 +27,17 @@ export default class AdminPage extends React.Component {
         />
       ),
   };
+  constructor(props) {
+    super(props);
+    
+  userId = this.props.navigation.getParam('itemId', '');
+   PersonName = this.props.navigation.getParam('name','');
+   }
   render() {
     const nav = this.props.navigation;
     return (
       <View style={{flex: 0.9}}>
-      <Card containerStyle={{flex:1, justifyContent: "center"}}
-        title='Access with your QR code'>
-        <Text style={{marginBottom: 30}}>
-          Tap to Scan your QR code to reserve a device.
-        </Text>
-        <Button
-          icon={<Icon name='md-qr-scanner' color='#ffffff' />}
-          backgroundColor='#03A9F4'
-          buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-          onPress={() => nav.navigate('PersonScan')}
-          title='SCAN NOW' />
-      </Card>
+      
      
       <Card containerStyle={{flex:1, justifyContent: "center"}}
         title='Device List'>
