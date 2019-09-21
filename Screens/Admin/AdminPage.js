@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Platform,TouchableOpacity, StyleSheet, Text, View, Button} from 'react-native';
-import { Card, Icon,ListItem } from 'react-native-elements';
+import {Platform,TouchableOpacity, StyleSheet, View,ImageBackground} from 'react-native';
+import { Icon,ListItem , Button, Text} from 'react-native-elements';
+import GridView from 'react-native-super-grid';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -8,52 +9,64 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-
+const list = [
+  {
+    title: 'Add/Edit Device',
+    icon: 'av-timer'
+  },
+  {
+    title: 'Add/Edit Person',
+    icon: 'flight-takeoff'
+  },
+  {
+    title: 'Reports',
+    icon: 'av-timer'
+  },
+  {
+    title: 'Settings',
+    icon: 'flight-takeoff'
+  },
+]
 export default class AdminPage extends React.Component {
   static navigationOptions = {
-    title: 'Super User',
-    headerTintColor: '#ffffff',
-      headerStyle: {
-        backgroundColor: '#2F95D6',
-        borderBottomColor: '#ffffff',
-        borderBottomWidth: 3,
-      },
-      headerTitleStyle: {
-        fontSize: 18,
-      },headerRight: (
-        <Button
-          title="Help"
-          type="outline"
-        />
-      ),
+    header: null,
   };
   constructor(props) {
     super(props);
-  userId = this.props.navigation.getParam('itemId', '');
-   PersonName = this.props.navigation.getParam('name','');
+    userId = this.props.navigation.getParam('itemId', '');
+    PersonName = this.props.navigation.getParam('name','');
    }
   render() {
-    const nav = this.props.navigation;
-    return (<View style={{flex: 0.98}}>
-      <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around', paddingTop: 30, paddingBottom:30}}>
-        <View style={{width: 100, height: 100, backgroundColor: 'powderblue'}} />
-        <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
-        <View style={{width: 100, height: 100, backgroundColor: 'steelblue'}} />
+    const items = [
+      { name: 'TURQUOISE', code: '#1abc9c' }, 
+      { name: 'EMERALD', code: '#2ecc71' },
+      { name: 'PETER RIVER', code: '#3498db' }, 
+    ];
+    return (
+    <View style={{flex: 1}}>
+      <View style={{flex:1}}>
+        <ImageBackground
+          accessibilityRole={'image'}
+          source={require('../../images/DIMSplash.png')}
+          style={styles.background}
+          imageStyle={styles.logo}>
+          <Text style={styles.text}>Welcome, {PersonName}</Text>
+        </ImageBackground>
       </View>
-        <Card containerStyle={{flex:5, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around'}}>
-            <View style={{width: 100, height: 100, backgroundColor: 'powderblue'}} />
-            <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
+      <View style={{flex:3, backgroundColor: '#2ecc71'}}>
+       <GridView
+        itemDimension={50}
+        items={items}
+        style={styles.gridView}
+        renderItem={item => (
+          <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
+            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemCode}>{item.code}</Text>
           </View>
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around'}}>
-            <View style={{width: 100, height: 100, backgroundColor: 'red'}} />
-            <View style={{width: 100, height: 100, backgroundColor: 'green'}} />
-          </View>
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around'}}>
-            <View style={{width: 100, height: 100, backgroundColor: 'powderblue'}} />
-            <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
-          </View>
-        </Card>
+        )}
+      />
+      </View>
+          
       </View>);
   }
 }
@@ -72,6 +85,44 @@ const styles = StyleSheet.create({
     width: 200,
     marginTop: 14,
   },
-  
+  background: {
+    paddingBottom: 40,
+    paddingTop: 96,
+    paddingHorizontal: 32,
+    backgroundColor: '#EBF5FB',
+  },
+  logo: {
+    opacity: 0.1,
+    overflow: 'visible',
+    resizeMode: 'cover',
+    marginLeft: 0,
+    marginBottom: 0,
+  },
+  text: {
+    fontSize: 40,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: 'black',
+  },
+  gridView: {
+    paddingTop: 25,
+    flex: 1,
+  },
+  itemContainer: {
+    justifyContent: 'flex-end',
+    borderRadius: 5,
+    padding: 10,
+    height: 150,
+  },
+  itemName: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  itemCode: {
+    fontWeight: '600',
+    fontSize: 12,
+    color: '#fff',
+  },
 });
 
