@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {Platform,TouchableOpacity, StyleSheet, View,ImageBackground} from 'react-native';
-import { Icon,ListItem , Button, Text} from 'react-native-elements';
-import GridView from 'react-native-super-grid';
+import {Platform,TouchableOpacity, StyleSheet, View,ImageBackground, Text} from 'react-native';
+import { ListItem } from 'react-native-elements';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -37,34 +36,65 @@ export default class AdminPage extends React.Component {
     PersonName = this.props.navigation.getParam('name','');
    }
   render() {
-    const items = [
-      { name: 'TURQUOISE', code: '#1abc9c' }, 
-      { name: 'EMERALD', code: '#2ecc71' },
-      { name: 'PETER RIVER', code: '#3498db' }, 
-    ];
+   
     return (
     <View style={{flex: 1}}>
-      <View style={{flex:1}}>
+      <View style={{flex: 2}} >
         <ImageBackground
           accessibilityRole={'image'}
           source={require('../../images/DIMSplash.png')}
           style={styles.background}
           imageStyle={styles.logo}>
-          <Text style={styles.text}>Welcome, {PersonName}</Text>
+          <Text style={styles.text}>Welcome, {this.PersonName}</Text>
         </ImageBackground>
       </View>
-      <View style={{flex:3, backgroundColor: '#2ecc71'}}>
-       <GridView
-        itemDimension={50}
-        items={items}
-        style={styles.gridView}
-        renderItem={item => (
-          <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemCode}>{item.code}</Text>
-          </View>
-        )}
-      />
+      <View style={{flex:0.5}}>
+      <View style={{backgroundColor: '#FA8072', justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{color: '#FFFFFF', padding: 5}}>Super User Dashboard</Text>
+        </View>
+      </View>
+      <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 20}}>
+        <View style={styles.roundCorner}>
+          <Text style={styles.dashText}>15</Text>
+          <TouchableOpacity
+                  style={styles.button}>
+                    <Text style={styles.buttonText}>
+                      Issued Devices
+                    </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.roundCorner}>
+        <Text style={styles.dashText}>3</Text>
+          <TouchableOpacity
+                  style={styles.button}>
+                    <Text style={styles.buttonText}>
+                      Not Returned
+                    </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.roundCorner}>
+        <Text style={styles.dashText}>95</Text>
+          <TouchableOpacity
+                  style={styles.button}>
+                    <Text style={styles.buttonText}>
+                      Total Devices
+                    </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View  style={{flex: 5}}>
+      {
+          list.map((item, i) => (
+            <ListItem
+              key={i}
+              title={item.title}
+              leftIcon={{ name: item.icon }}
+              bottomDivider
+              topDivider
+              chevron
+            />
+          ))
+        }
       </View>
           
       </View>);
@@ -78,17 +108,10 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
-  button: {
-    backgroundColor: '#2F95D6',
-    alignItems: 'center',
-    padding: 12,
-    width: 200,
-    marginTop: 14,
-  },
   background: {
     paddingBottom: 40,
-    paddingTop: 96,
-    paddingHorizontal: 32,
+    paddingTop: 40,
+    //paddingHorizontal: 32,
     backgroundColor: '#EBF5FB',
   },
   logo: {
@@ -104,25 +127,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
-  gridView: {
-    paddingTop: 25,
+  roundCorner:{
+    width: 100, height: 100,
+    marginRight:40,
+    marginLeft:40,
+    marginTop:10,
+    //paddingTop:20,
+    //paddingBottom:20,
+    backgroundColor:'#EBF5FB',
+    borderRadius:10,
+    borderWidth: 1,
+    borderColor: '#fff',
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+  dashText:{
+    fontSize: 40,
+    paddingTop: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     flex: 1,
   },
-  itemContainer: {
-    justifyContent: 'flex-end',
-    borderRadius: 5,
-    padding: 10,
-    height: 150,
+  buttonText:{
+    fontSize: 12, textDecorationLine: 'underline', color: '#3498DB' 
   },
-  itemName: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  itemCode: {
-    fontWeight: '600',
-    fontSize: 12,
-    color: '#fff',
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 10,
   },
 });
 

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Image, Alert} from 'react-native';
+import {Platform, StyleSheet, Text, View, Image, Alert,TouchableOpacity, PermissionsAndroid } from 'react-native';
 import { Button, Icon, Card} from 'react-native-elements';
-import { TouchableOpacity, Linking, PermissionsAndroid } from 'react-native';
 import { CameraKitCameraScreen } from 'react-native-camera-kit'
+import { ScrollView } from 'react-native-gesture-handler';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -188,9 +188,9 @@ scanmore=()=>{
       
     if (!this.state.Start_Scanner) {
       
-      return (
+      return (<ScrollView>
         <View style={styles.MainContainer}>
-            <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
+            <View style={{flex: 1, alignItems: 'center',justifyContent: 'center',padding: 12,}}>
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {PersonName}</Text> 
               <Image source={require('../images/scan-icon.png')} />
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device</Text> 
@@ -220,7 +220,7 @@ scanmore=()=>{
               :null}
             </View>
         </View>
-        
+        </ScrollView>
       );
     } 
     return (
@@ -256,11 +256,16 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   button: {
-    backgroundColor: '#2F95D6',
+    backgroundColor: '#3498DB',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
     width: 200,
-    marginTop: 14,
+    marginRight:40,
+    marginLeft:40,
+    marginTop:10,
+    marginBottom: 10,
+    borderRadius:10,
   },
   
 });

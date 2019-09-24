@@ -207,12 +207,12 @@ export default class UserPage extends React.Component {
 	        </View>
 
         <View style={ customstyle.bottomView} >
-        <Button
-         onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname,admin:this.state.isadmin})}
-            backgroundColor='#03A9F4'
-            buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0, width:200,}}
-            raised
-            title='Add More Device' />
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname,admin:this.state.isadmin})}
+          style={customstyle.button}>
+            <Text style={{ color: '#FFF', fontSize: 14 }}>Add More Device</Text>
+        </TouchableOpacity> 
+        
         </View>
     </View>
   )
@@ -272,8 +272,7 @@ const customstyle = StyleSheet.create(
       position: 'absolute',
       bottom: 0,
       tintColor: '#ffffff',
-      borderTopWidth: 2,
-      borderTopColor:'#808080',
+      borderTopWidth: 1,
     },
     row_cell_devicename: {
       flex: 1,
@@ -293,7 +292,6 @@ const customstyle = StyleSheet.create(
       justifyContent: 'center',
       height: 60,
       borderColor: '#D5D8DC',
-      borderRadius: 1,
     },
     rowBack: {
       alignItems: 'center',
@@ -322,5 +320,17 @@ const customstyle = StyleSheet.create(
     trash: {
       height: 25,
       width: 25,
-    }
+    },
+    button: {
+      backgroundColor: '#3498DB',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 12,
+      width: 200,
+      marginRight:40,
+      marginLeft:40,
+      marginTop:10,
+      marginBottom: 10,
+      borderRadius:10,
+    },
   });

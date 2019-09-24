@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Image} from 'react-native';
+import {Platform, StyleSheet, Text, View, Image,TouchableOpacity, PermissionsAndroid } from 'react-native';
 import { Button, Icon} from 'react-native-elements';
-import { TouchableOpacity, PermissionsAndroid } from 'react-native';
 import { CameraKitCameraScreen } from 'react-native-camera-kit';
+import { ScrollView } from 'react-native-gesture-handler';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -97,13 +97,15 @@ onQR_Code_Scan_Done = (QR_Code) => {
   render() {  
     const nav = this.props.navigation;
     if (!this.state.Start_Scanner) {
-      return (
+      return (<ScrollView>
         <View style={styles.MainContainer}>
-             <View style={{alignItems: 'center',justifyContent: 'center',padding: 12,}}>
-                <Image source={require('../images/scan-icon.png')} />
-                <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Person QR Code</Text> 
-                <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>User Login</Text>   
-                <TouchableOpacity
+             <View style={{flex: 3,alignItems: 'center',justifyContent: 'space-evenly',padding: 10,}}>
+                <Image style={{paddingTop: 10}} source={require('../images/scan-icon.png')} />
+                <Text style={{ fontSize: 22, textAlign: 'center',padding: 10, }}>Scan your Person QR Code</Text> 
+                <Text style={{ fontSize: 12, textAlign: 'center',padding: 10, }}>User Login</Text>   
+              </View>
+              <View style={{flex: 1,alignItems: 'center',justifyContent: 'space-evenly',padding: 10,}}>
+              <TouchableOpacity
                   onPress={this.open_QR_Code_Scanner}
                   style={styles.button}>
                     <Text style={{ color: '#FFF', fontSize: 14 }}>
@@ -111,7 +113,7 @@ onQR_Code_Scan_Done = (QR_Code) => {
                     </Text>
                 </TouchableOpacity>
               </View>
-        </View>
+        </View></ScrollView>
       );
     } 
     return (
@@ -134,9 +136,8 @@ const styles = StyleSheet.create({
  
   MainContainer: {
     flex: 1,
-    paddingTop: (Platform.OS) === 'ios' ? 20 : 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   QR_text: {
     color: '#000',
@@ -145,11 +146,16 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   button: {
-    backgroundColor: '#2F95D6',
+    backgroundColor: '#3498DB',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
     width: 200,
-    marginTop: 14,
+    marginRight:40,
+    marginLeft:40,
+    marginTop:20,
+    marginBottom: 20,
+    borderRadius:10,
   },
   
 });
