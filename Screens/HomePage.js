@@ -54,13 +54,13 @@ export default class HomePage extends React.Component {
          <TouchableOpacity
             onPress={() => nav.navigate('PersonScan')}
             style={styles.buttonTouch}>
-              <Text style={{ color: '#2874A6', fontSize: 15 , fontWeight: 'bold' }}>Reserve A Device</Text>
+              <Text style={{ color: '#ffffff', fontSize: 15 , fontWeight: 'bold' }}>Reserve A Device</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>  nav.navigate('DeviceList')}
             style={styles.buttonTouch}>
 
-              <Text style={{ color: '#2874A6', fontSize: 15, fontWeight: 'bold' }}>View Device List</Text>
+              <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: 'bold' }}>View Device List</Text>
           </TouchableOpacity>
              
         </View>
@@ -126,13 +126,13 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   buttonTouch: {
-    backgroundColor: '#ECF0F1',
+    backgroundColor: '#3498DB',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
     width: 200,
     flex: 1,
-    height: 100,
+    height: 60,
     marginRight:40,
     marginLeft:40,
     marginTop:20,
