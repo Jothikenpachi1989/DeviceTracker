@@ -32,6 +32,7 @@ export default class DeviceList extends React.Component {
     this.state = {
       listType: 'FlatList',
       listViewData: [],
+      entriesViewData: [],
       isVisible: false,
       deviceType: "All", 
       deviceAvailability: "All",
@@ -70,6 +71,21 @@ export default class DeviceList extends React.Component {
           });
         }
         this.setState({listViewData: temp,});
+      });
+    });
+    db.transaction(tx => {
+      tx.executeSql('select * from entries', [], (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push({
+            key: `${i}`,
+            assetid: results.rows.item(i).assetid,
+            pickuptime: results.rows.item(i).pickup,
+            devicename: results.rows.item(i).devicename,
+            returntime: results.rows.item(i).returntime,
+          });
+        }
+        this.setState({entriesViewData: temp,});
       });
     });
   }
@@ -166,10 +182,12 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
                     <View style={customstyle.row_cell_devicename}>
                       <Text>{data.item.devicename}</Text>
                     </View>
-                    <View style={customstyle.row_cell_devicename}>
+                    {/* <View style={customstyle.row_cell_devicename}>
                       <Text>{data.item.team}</Text>
                       <Text>{data.item.location}</Text>
-                    </View>
+                    </View> */}
+                    {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_devicename}></Text>) : 
+                  (<Text style={customstyle.row_cell_devicename}>pickup</Text> ) }
                     <View style={customstyle.row_cell_place}>
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_available}>Available</Text>) : 
                   (<Text style={customstyle.row_cell_temp}>{data.item.devicestatus}</Text> ) }
@@ -335,14 +353,9 @@ const customstyle = StyleSheet.create(
       flexDirection: 'row',  // main axis
       justifyContent: 'flex-start', // main axis
       alignItems: 'center', // cross axis
-      paddingTop: 15,
-      paddingBottom: 15,
       paddingLeft: 5,
       paddingRight: 5,
-      marginLeft: 10,
-      marginRight: 10,
-      marginTop: 3,
-      marginBottom: 2,
+      
     },
     row_cell_icon: {
       paddingLeft: 10,
