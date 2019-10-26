@@ -149,6 +149,10 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
   }
   this.setState({isVisible: true});
 }
+getPickUpTime=(assetid)=>{
+  return this.state.entriesViewData.filter(edata => edata.assetid == assetid);
+}
+
   render() {
    return (
 
