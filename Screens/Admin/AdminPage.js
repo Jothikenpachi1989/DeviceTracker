@@ -11,19 +11,23 @@ const instructions = Platform.select({
 const list = [
   {
     title: 'Add/Edit Device',
-    icon: 'av-timer'
+    icon: 'av-timer',
+    link: 'ViewCustomList'
   },
   {
     title: 'Add/Edit Person',
-    icon: 'flight-takeoff'
+    icon: 'flight-takeoff',
+    link: 'ViewCustomList'
   },
   {
     title: 'Reports',
-    icon: 'av-timer'
+    icon: 'av-timer',
+    link: 'ViewCustomList'
   },
   {
     title: 'Settings',
-    icon: 'flight-takeoff'
+    icon: 'flight-takeoff',
+    link: 'ViewCustomList'
   },
 ]
 export default class AdminPage extends React.Component {
@@ -88,6 +92,7 @@ export default class AdminPage extends React.Component {
             <ListItem
               key={i}
               title={item.title}
+              onPress={()=>{this.props.navigation.navigate(item.link)}}
               leftIcon={{ name: item.icon }}
               bottomDivider
               topDivider
