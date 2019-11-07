@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet,TouchableOpacity, Text, View, ImageBackground, Button} from 'react-native';
-import { Card, Icon } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
+var SQlite = require('react-native-sqlite-storage')
+var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -14,6 +15,22 @@ export default class HomePage extends React.Component {
   static navigationOptions = {
     header: null,
   };
+  constructor (props) {
+    super(props)
+    this.state = {
+      issuedDevices: 0,
+      NotReturned: 0, 
+      TotalDevices: 0,
+    }
+    db.transaction(tx => {
+      tx.executeSql('select count(*) as Total, sum(case when devicestatus=="issued" then 1 ELSE 0 END) as IssuedDevices from devices', [], (tx, results) => {
+        for (let i = 0; i < results.rows.length; ++i) {
+          this.setState({TotalDevices: results.rows.item(i).Total});
+          this.setState({issuedDevices: results.rows.item(i).IssuedDevices});
+        }
+      });
+    });
+  }
   render() {
     const nav = this.props.navigation;
     return (<ScrollView>
@@ -32,19 +49,19 @@ export default class HomePage extends React.Component {
         </View>
         <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 20}}>
           <View style={styles.roundCorner}>
-            <Text style={styles.dashText}>15</Text>
+            <Text style={styles.dashText}>{this.state.issuedDevices}</Text>
                 <Text style={styles.buttonText}>
                   Issued
                 </Text>
           </View>
           <View style={styles.roundCorner}>
-          <Text style={styles.dashText}>3</Text>
+          <Text style={styles.dashText}>{this.state.NotReturned}</Text>
                       <Text style={styles.buttonText}>
                         Not Returned
                       </Text>
           </View>
           <View style={styles.roundCorner}>
-          <Text style={styles.dashText}>95</Text>
+          <Text style={styles.dashText}>{this.state.TotalDevices}</Text>
                       <Text style={styles.buttonText}>
                         Total Devices
                       </Text>

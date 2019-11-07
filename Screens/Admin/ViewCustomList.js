@@ -1,16 +1,14 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Overlay, Card} from 'react-native-elements';
-import DropdownMenu from 'react-native-dropdown-menu';
-import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import { Button, Icon,Avatar} from 'react-native-elements';
+import { SwipeListView } from 'react-native-swipe-list-view';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-var data = [["All Devices", "Android", "iPhone", "iPad"], ["All", "Available","issued"]];
    
 export default class ViewCustomList extends React.Component {
   static navigationOptions = ({navigation})=>({
-    headerTitle: 'Device List',
+    headerTitle: navigation.getParam('titleName', ''),
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -27,51 +25,74 @@ export default class ViewCustomList extends React.Component {
       />
     ),
   });
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
       listType: 'FlatList',
       listViewData: [],
       isVisible: false,
       deviceType: "All", 
       deviceAvailability: "All",
+      modules: this.props.navigation.getParam('titleName', ''),
     }
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
     });
-    db.transaction(tx => {
-      tx.executeSql('select assetid,devicetype, devicename, team, location, devicestatus from all_device_detailes', [], (tx, results) => {
-        var temp = [];
-        for (let i = 0; i < results.rows.length; ++i) {
-          temp.push({
-            key: `${i}`,
-            assetid: results.rows.item(i).assetid,
-            location: results.rows.item(i).location,
-            devicename: results.rows.item(i).devicename,
-            devicetype: results.rows.item(i).devicetype,
-            team: results.rows.item(i).team,
-            devicestatus: results.rows.item(i).devicestatus
-          });
-        }
-        this.setState({listViewData: temp,});
+    //Logic for Device or Person page display
+    if(this.state.modules == "Add/Edit Device"){
+      db.transaction(tx => {
+        tx.executeSql('select * from devices', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              assetid: results.rows.item(i).assetid,
+              location: results.rows.item(i).location,
+              devicename: results.rows.item(i).devicename,
+              devicetype: results.rows.item(i).devicetype,
+              team: results.rows.item(i).team,
+              devicestatus: results.rows.item(i).devicestatus,
+              os: results.rows.item(i).OS
+            });
+          }
+          this.setState({listViewData: temp,});
+        });
       });
-    });
-    db.transaction(tx => {
-      tx.executeSql('select * from entries', [], (tx, results) => {
-        var temp = [];
-        for (let i = 0; i < results.rows.length; ++i) {
-          temp.push({
-            key: `${i}`,
-            assetid: results.rows.item(i).assetid,
-            pickuptime: results.rows.item(i).pickup,
-            devicename: results.rows.item(i).devicename,
-            returntime: results.rows.item(i).returntime,
-          });
-        }
-        this.setState({entriesViewData: temp,});
+      db.transaction(tx => {
+        tx.executeSql('select * from entries', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              assetid: results.rows.item(i).assetid,
+              pickuptime: results.rows.item(i).pickup,
+              devicename: results.rows.item(i).devicename,
+              returntime: results.rows.item(i).returntime,
+            });
+          }
+          this.setState({entriesViewData: temp,});
+        });
       });
-    });
+    } else if(this.state.modules == "Add/Edit Person"){
+      db.transaction(tx => {
+        tx.executeSql('select * from users', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              userid: results.rows.item(i).userid,
+              location: results.rows.item(i).location,
+              name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname,
+              isadmin: results.rows.item(i).isadmin,
+              team: results.rows.item(i).team
+            });
+          }
+          this.setState({listViewData: temp,});
+        });
+      });
+    }
+    
   }
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
@@ -91,6 +112,7 @@ export default class ViewCustomList extends React.Component {
    return (
 
     <View style={{flex: 1}}>
+      {this.state.modules == "Add/Edit Device" ?
       <SwipeListView
         data={this.state.listViewData}
         keyExtractor={(item,index) => index.toString()}
@@ -108,11 +130,11 @@ export default class ViewCustomList extends React.Component {
               <View style={customstyle.row_cell_devicename}>
                 <Text>{data.item.devicename}</Text>
               </View>
-                <Text style={customstyle.row_cell_devicename}>{data.item.assetid}</Text>
-              
+              <View style={customstyle.row_cell_devicename}>
+                <Text>{data.item.assetid}</Text>
+              </View>
               <View style={customstyle.row_cell_place}>
-              {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_available}>Available</Text>) : 
-            (<Text style={customstyle.row_cell_temp}>{data.item.devicestatus}</Text> ) }
+                <Button title="Edit" type="clear" /> 
               </View>
             </View>
           </TouchableHighlight>
@@ -120,18 +142,49 @@ export default class ViewCustomList extends React.Component {
         renderHiddenItem={ (data, rowMap) => (
           <View style={customstyle.rowBack}>
             <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
-            <Text style={customstyle.backTextWhite}>View</Text>
-            <Text style={customstyle.backTextWhite}>Edit</Text>
-            <Text style={customstyle.backTextWhite}>Delete</Text>
+            <Text style={customstyle.backTextWhite}>Remove</Text>
             </TouchableOpacity>
           </View>
         )}
         rightOpenValue={-70}
-        previewRowKey={'0'}
-        previewOpenValue={-70}
-        previewOpenDelay={3000}
+        onSwipeValueChange={this.onSwipeValueChange}
+      />  : 
+      <SwipeListView
+        data={this.state.listViewData}
+        keyExtractor={(item,index) => index.toString()}
+        renderItem={ (data, rowMap) => (
+          <TouchableHighlight
+            style={customstyle.rowFront}
+            underlayColor={'#AAA'}
+            key={data.item.key}
+          >
+          <View style={customstyle.row}>
+          <View style={customstyle.row_cell_icon}>
+          <Avatar rounded icon={{ name: 'person' }} />
+          </View>
+              <View style={customstyle.row_cell_devicename}>
+                <Text>{data.item.name}</Text>
+              </View>
+              <View style={customstyle.row_cell_devicename}>
+                <Text>{data.item.userid}</Text>
+              </View>
+              <View style={customstyle.row_cell_place}>
+                <Button title="Edit" type="clear" /> 
+              </View>
+            </View>
+          </TouchableHighlight>
+        )}
+        renderHiddenItem={ (data, rowMap) => (
+          <View style={customstyle.rowBack}>
+            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
+            <Text style={customstyle.backTextWhite}>Remove</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        rightOpenValue={-70}
         onSwipeValueChange={this.onSwipeValueChange}
       />  
+      }
         </View>
         
   )
@@ -218,7 +271,7 @@ const customstyle = StyleSheet.create(
     },
     row_cell_devicename: {
       flex: 1,
-      paddingLeft: 10,
+      paddingLeft: 20,
       flexDirection: 'column',
     },
     row_cell_place: {
@@ -229,7 +282,7 @@ const customstyle = StyleSheet.create(
       alignItems: 'center',
       backgroundColor: '#EBF5FB',
       justifyContent: 'center',
-      height: 60,
+      height: 50,
       borderColor: '#D5D8DC',
       borderRadius: 1,
     },

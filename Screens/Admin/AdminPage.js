@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Platform,TouchableOpacity, StyleSheet, View,ImageBackground, Text} from 'react-native';
 import { ListItem } from 'react-native-elements';
+var SQlite = require('react-native-sqlite-storage')
+var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -29,6 +31,11 @@ const list = [
     icon: 'flight-takeoff',
     link: 'ViewCustomList'
   },
+  {
+    title: 'LogOut',
+    icon: 'flight-takeoff',
+    link: 'ViewCustomList'
+  },
 ]
 export default class AdminPage extends React.Component {
   static navigationOptions = {
@@ -38,6 +45,19 @@ export default class AdminPage extends React.Component {
     super(props);
     userId = this.props.navigation.getParam('itemId', '');
     PersonName = this.props.navigation.getParam('name','');
+    this.state={
+      issuedDevices: 0,
+      NotReturned: 0, 
+      TotalDevices: 0,
+    }
+    db.transaction(tx => {
+      tx.executeSql('select count(*) as Total, sum(case when devicestatus=="issued" then 1 ELSE 0 END) as IssuedDevices from devices', [], (tx, results) => {
+        for (let i = 0; i < results.rows.length; ++i) {
+          this.setState({TotalDevices: results.rows.item(i).Total});
+          this.setState({issuedDevices: results.rows.item(i).IssuedDevices});
+        }
+      });
+    });
    }
   render() {
    
@@ -59,7 +79,7 @@ export default class AdminPage extends React.Component {
       </View>
       <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 20}}>
         <View style={styles.roundCorner}>
-          <Text style={styles.dashText}>15</Text>
+          <Text style={styles.dashText}>{this.state.issuedDevices}</Text>
           <TouchableOpacity
                   style={styles.button}>
                     <Text style={styles.buttonText}>
@@ -68,7 +88,7 @@ export default class AdminPage extends React.Component {
           </TouchableOpacity>
         </View>
         <View style={styles.roundCorner}>
-        <Text style={styles.dashText}>3</Text>
+        <Text style={styles.dashText}>{this.state.NotReturned}</Text>
           <TouchableOpacity
                   style={styles.button}>
                     <Text style={styles.buttonText}>
@@ -77,7 +97,7 @@ export default class AdminPage extends React.Component {
           </TouchableOpacity>
         </View>
         <View style={styles.roundCorner}>
-        <Text style={styles.dashText}>95</Text>
+        <Text style={styles.dashText}>{this.state.TotalDevices}</Text>
           <TouchableOpacity
                   style={styles.button}>
                     <Text style={styles.buttonText}>
@@ -92,7 +112,7 @@ export default class AdminPage extends React.Component {
             <ListItem
               key={i}
               title={item.title}
-              onPress={()=>{this.props.navigation.navigate(item.link)}}
+              onPress={()=>{this.props.navigation.navigate(item.link, {titleName: item.title})}}
               leftIcon={{ name: item.icon }}
               bottomDivider
               topDivider

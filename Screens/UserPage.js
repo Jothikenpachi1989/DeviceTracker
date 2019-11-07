@@ -229,7 +229,6 @@ const customstyle = StyleSheet.create(
       paddingTop: 3,
       backgroundColor: '#FFFFFF',
       borderBottomColor:'#808080',
-      borderBottomWidth: 2,
     },
     userImage: {
       marginRight: 12,
@@ -272,7 +271,6 @@ const customstyle = StyleSheet.create(
       position: 'absolute',
       bottom: 0,
       tintColor: '#ffffff',
-      borderTopWidth: 1,
     },
     row_cell_devicename: {
       flex: 1,
