@@ -80,7 +80,7 @@ export default class AdminPage extends React.Component {
       <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 20}}>
         <View style={styles.roundCorner}>
           <Text style={styles.dashText}>{this.state.issuedDevices}</Text>
-          <TouchableOpacity
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate("ViewCustomList", {titleName:"Issued Devices"})}}
                   style={styles.button}>
                     <Text style={styles.buttonText}>
                       Issued Devices
@@ -89,7 +89,7 @@ export default class AdminPage extends React.Component {
         </View>
         <View style={styles.roundCorner}>
         <Text style={styles.dashText}>{this.state.NotReturned}</Text>
-          <TouchableOpacity
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate("ViewCustomList", {titleName:"Not Returned"})}}
                   style={styles.button}>
                     <Text style={styles.buttonText}>
                       Not Returned
@@ -98,7 +98,7 @@ export default class AdminPage extends React.Component {
         </View>
         <View style={styles.roundCorner}>
         <Text style={styles.dashText}>{this.state.TotalDevices}</Text>
-          <TouchableOpacity
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate("ViewCustomList", {titleName:"Total Devices"})}}
                   style={styles.button}>
                     <Text style={styles.buttonText}>
                       Total Devices

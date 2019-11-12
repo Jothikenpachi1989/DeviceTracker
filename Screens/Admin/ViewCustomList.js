@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Avatar} from 'react-native-elements';
+import { Button, Icon,Avatar, Overlay} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -22,7 +22,7 @@ export default class ViewCustomList extends React.Component {
         onPress={() => alert("This is help content")}
         title="Help"
         color="#fff"
-      />
+      /> //Demo button for future use
     ),
   });
   constructor (props) {
@@ -30,17 +30,16 @@ export default class ViewCustomList extends React.Component {
     this.state = {
       listType: 'FlatList',
       listViewData: [],
+      overlaystate: "none",
       isVisible: false,
-      deviceType: "All", 
-      deviceAvailability: "All",
-      modules: this.props.navigation.getParam('titleName', ''),
+      modules: this.props.navigation.getParam('titleName', ''), //parameter from navigation
     }
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
     });
-    //Logic for Device or Person page display
-    if(this.state.modules == "Add/Edit Device"){
+    //If Logic to fetch data from database for Devices or Person List view
+    if(this.state.modules == "Add/Edit Device"){ 
       db.transaction(tx => {
         tx.executeSql('select * from devices', [], (tx, results) => {
           var temp = [];
@@ -74,7 +73,7 @@ export default class ViewCustomList extends React.Component {
           this.setState({entriesViewData: temp,});
         });
       });
-    } else if(this.state.modules == "Add/Edit Person"){
+    } else if(this.state.modules == "Add/Edit Person"){ 
       db.transaction(tx => {
         tx.executeSql('select * from users', [], (tx, results) => {
           var temp = [];
@@ -91,6 +90,63 @@ export default class ViewCustomList extends React.Component {
           this.setState({listViewData: temp,});
         });
       });
+    } else if(this.state.modules == "Issued Devices"){
+      db.transaction(tx => {
+        tx.executeSql('select * from devices where devicestatus="issued"', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              assetid: results.rows.item(i).assetid,
+              location: results.rows.item(i).location,
+              devicename: results.rows.item(i).devicename,
+              devicetype: results.rows.item(i).devicetype,
+              team: results.rows.item(i).team,
+              devicestatus: results.rows.item(i).devicestatus,
+              os: results.rows.item(i).OS
+            });
+          }
+          this.setState({listViewData: temp,});
+        });
+      });
+    } else if(this.state.modules == "Not Returned"){
+      db.transaction(tx => {
+        tx.executeSql('select * from devices', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              assetid: results.rows.item(i).assetid,
+              location: results.rows.item(i).location,
+              devicename: results.rows.item(i).devicename,
+              devicetype: results.rows.item(i).devicetype,
+              team: results.rows.item(i).team,
+              devicestatus: results.rows.item(i).devicestatus,
+              os: results.rows.item(i).OS
+            });
+          }
+          this.setState({listViewData: temp,});
+        });
+      });
+    } else if(this.state.modules == "Total Devices"){
+      db.transaction(tx => {
+        tx.executeSql('select * from devices', [], (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push({
+              key: `${i}`,
+              assetid: results.rows.item(i).assetid,
+              location: results.rows.item(i).location,
+              devicename: results.rows.item(i).devicename,
+              devicetype: results.rows.item(i).devicetype,
+              team: results.rows.item(i).team,
+              devicestatus: results.rows.item(i).devicestatus,
+              os: results.rows.item(i).OS
+            });
+          }
+          this.setState({listViewData: temp,});
+        });
+      });
     }
     
   }
@@ -99,61 +155,35 @@ export default class ViewCustomList extends React.Component {
 			rowMap[rowKey].closeRow();
 		}
 	}
-	rightKey(rowMap, rowKey,mobassetid,devicestatus) {
+	rightKey(rowMap, rowKey,mobassetid) {
     this.closeRow(rowMap, rowKey);
-    this.getDeviceDetails(mobassetid,devicestatus);
+  }
+  edit(rowMap, rowKey,mobassetid) {
+    this.setState({overlaystate: "edit",})
+    this.setState({isVisible: true,})
+  }
+  viewOnTap(rowMap, rowKey,mobassetid) {
+    this.setState({overlaystate: "view",})
+    this.setState({isVisible: true,})
 	}
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
 		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
   }
-
+  getDeviceDetails=(mobassetid)=>{
+    //this.setState({isVisible: true,})
+  }
   render() {
    return (
-
+//Conditional blocks to display listview with Person data or Device data(multiple variations)
     <View style={{flex: 1}}>
-      {this.state.modules == "Add/Edit Device" ?
+      {this.state.modules == "Add/Edit Person" ? 
       <SwipeListView
         data={this.state.listViewData}
         keyExtractor={(item,index) => index.toString()}
         renderItem={ (data, rowMap) => (
           <TouchableHighlight
-            style={customstyle.rowFront}
-            underlayColor={'#AAA'}
-            key={data.item.key}
-          >
-          <View style={customstyle.row}>
-              <View style={customstyle.row_cell_icon}>
-                {data.item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                    data.item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-              </View>
-              <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.devicename}</Text>
-              </View>
-              <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.assetid}</Text>
-              </View>
-              <View style={customstyle.row_cell_place}>
-                <Button title="Edit" type="clear" /> 
-              </View>
-            </View>
-          </TouchableHighlight>
-        )}
-        renderHiddenItem={ (data, rowMap) => (
-          <View style={customstyle.rowBack}>
-            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
-            <Text style={customstyle.backTextWhite}>Remove</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        rightOpenValue={-70}
-        onSwipeValueChange={this.onSwipeValueChange}
-      />  : 
-      <SwipeListView
-        data={this.state.listViewData}
-        keyExtractor={(item,index) => index.toString()}
-        renderItem={ (data, rowMap) => (
-          <TouchableHighlight
+          
             style={customstyle.rowFront}
             underlayColor={'#AAA'}
             key={data.item.key}
@@ -176,17 +206,86 @@ export default class ViewCustomList extends React.Component {
         )}
         renderHiddenItem={ (data, rowMap) => (
           <View style={customstyle.rowBack}>
-            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
+            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid) }>
             <Text style={customstyle.backTextWhite}>Remove</Text>
             </TouchableOpacity>
           </View>
         )}
         rightOpenValue={-70}
         onSwipeValueChange={this.onSwipeValueChange}
-      />  
-      }
+      />  : 
+       <SwipeListView
+      data={this.state.listViewData}
+      keyExtractor={(item,index) => index.toString()}
+      renderItem={ (data, rowMap) => (
+        <TouchableHighlight
+        onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item.assetid) }
+          style={customstyle.rowFront}
+          underlayColor={'#AAA'}
+          key={data.item.key}
+        >
+        <View style={customstyle.row}>
+            <View style={customstyle.row_cell_icon}>
+              {data.item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
+                  data.item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
+            </View>
+            <View style={customstyle.row_cell_devicename}>
+              <Text>{data.item.devicename}</Text>
+            </View>
+            <View style={customstyle.row_cell_devicename}>
+              <Text>{data.item.assetid}</Text>
+            </View>
+            <View style={customstyle.row_cell_place}>
+              <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item.assetid) }/> 
+            </View>
+          </View>
+        </TouchableHighlight>
+      )}
+      renderHiddenItem={ (data, rowMap) => (
+        <View style={customstyle.rowBack}>
+          <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
+          <Text style={customstyle.backTextWhite}>Remove</Text>
+          </TouchableOpacity>
         </View>
-        
+      )}
+      rightOpenValue={-70}
+      onSwipeValueChange={this.onSwipeValueChange}
+    /> 
+      }
+      {this.state.overlaystate == "view" ? 
+        <Overlay
+          isVisible={this.state.isVisible}
+          onBackdropPress={() => this.setState({ isVisible: false })}>
+            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
+            <Button
+              backgroundColor='#03A9F4'
+              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
+              onPress={() => {this.setState({ isVisible: false })}}
+              title='EDIT' />
+              <Button
+              backgroundColor='#03A9F4'
+              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
+              onPress={() => {this.setState({ isVisible: false })}}
+              title='DONE' />
+            </View>
+          </Overlay> : 
+          null
+        }
+        {this.state.overlaystate == "edit" ? 
+        <Overlay
+          isVisible={this.state.isVisible}
+          onBackdropPress={() => this.setState({ isVisible: false })}>
+            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
+              <Button
+              backgroundColor='#03A9F4'
+              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
+              onPress={() => {this.setState({ isVisible: false })}}
+              title='Save' />
+            </View>
+          </Overlay> : 
+          null
+        }
+        </View>     
   )
   }
 }
