@@ -341,17 +341,7 @@ export default class ViewCustomList extends React.Component {
                       <View style={customstyle.row_details}>
                       <Text style={customstyle.row_label}>Device Type</Text>
                       <View style={customstyle.row_value}>
-                       <Picker
-                          selectedValue={this.state.language}
-                          style={{height: 50, width: 100}}
-                          onValueChange={(itemValue, itemIndex) =>
-                            this.setState({language: itemValue})
-                          }>
-                          <Picker.Item label="Android" value="Android" />
-                          <Picker.Item label="AndroidTab" value="AndroidTab" />
-                          <Picker.Item label="iPhone" value="iPhone" />
-                          <Picker.Item label="iPad" value="iPad" />
-                        </Picker>
+                        
                       </View>
                         </View>
                         <View style={customstyle.row_details}>
