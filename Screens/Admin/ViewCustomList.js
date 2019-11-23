@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, TextInput, View, Picker} from 'react-native';
+import { StyleSheet, Text, TextInput, View} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Avatar, Overlay, Input} from 'react-native-elements';
+import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { ToggleButton } from 'react-native-paper';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -276,7 +277,7 @@ export default class ViewCustomList extends React.Component {
               {this.state.modules == "Add/Edit Person" ?
               <View><Text>This is Persone edit</Text></View>
             :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-                  <View style={{flex: 0.5,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+                  <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
                     <Text style={customstyle.subheader}>Device Details</Text>
                   </View>
                   <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
@@ -334,36 +335,35 @@ export default class ViewCustomList extends React.Component {
               <View><Text>This is Persone edit</Text></View>
 
             :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-                  <View style={{flex: 0.5,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+                  <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
                     <Text style={customstyle.subheader}>Edit Details</Text>
                   </View>
-                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
-                      <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Device Type</Text>
-                      <View style={customstyle.row_value}>
-                        
+                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
+                      <View style={customstyle.row_details2}>
+                      <ToggleButton.Row
+                        onValueChange={value => this.setState({ value })}
+                        value={this.state.value} >
+                          <ToggleButton icon="format-align-left" value="Android" />
+                          <ToggleButton icon="format-align-right" value="AndroidTab" />
+                          <ToggleButton icon="format-align-left" value="iPhone" />
+                          <ToggleButton icon="format-align-right" value="iPad" />
+                      </ToggleButton.Row>
                       </View>
-                        </View>
-                        <View style={customstyle.row_details}>
+                        <View style={customstyle.row_details2}>
                           <Input label='Device Name' placeholder='Device Name' value={this.state.itemDB.devicename}/>
                         </View>
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Device Status</Text>
-                          {this.state.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
-                          (<Text style={customstyle.row_value}>{this.state.itemDB.devicestatus}</Text> ) }
+                        <View style={customstyle.row_details2}>
+                         <Input label='Team' placeholder='Team Name' value={this.state.itemDB.team}/>
                         </View>
-                        <View style={customstyle.row_details}>
-                        <Input label='Team' placeholder='Team Name' value={this.state.itemDB.team}/>
+                        <View style={customstyle.row_details2}>
+                          <Input label='Location' placeholder='Location' value={this.state.itemDB.location}/>
                         </View>
-                        <View style={customstyle.row_details}>
-                        <Input label='Location' placeholder='Location' value={this.state.itemDB.location}/>
-                        </View>
-                        <View style={customstyle.row_details}>
+                        <View style={customstyle.row_details2}>
                           <Text style={customstyle.row_label}>Device active?</Text>
                           <Text style={customstyle.row_value}>{this.state.itemDB.isactive}</Text>
                         </View> 
                       </View>
-                      <View style={{flex: 1, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 15}}>
+                      <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
                           <Button
                           backgroundColor='#03A9F4'
                           buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
@@ -415,8 +415,6 @@ const customstyle = StyleSheet.create(
       flex: 0,
     }, 
     row_details: {
-      borderRadius: 0.5,
-      borderBottomWidth: 0.5,
       borderColor: '#D5D8DC',
       backgroundColor: '#ffffff',
       flex: 1,
@@ -429,6 +427,16 @@ const customstyle = StyleSheet.create(
       paddingRight: 5,
       marginLeft: 5,
       marginRight: 5,
+    },
+    row_details2: {
+      borderColor: '#D5D8DC',
+      backgroundColor: '#ffffff',
+      flex: 1,
+      flexDirection: 'row',  // main axis
+      justifyContent: 'space-between', // main axis
+      alignItems: 'center', // cross axis
+      paddingTop: 5,
+      paddingBottom: 5,
     },
     row_cell_temp: {
       color: '#111111',
