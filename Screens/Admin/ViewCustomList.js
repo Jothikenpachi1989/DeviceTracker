@@ -4,9 +4,13 @@ import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { ToggleButton } from 'react-native-paper';
+import { Dropdown } from 'react-native-material-dropdown';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
+let loc = [{ value: 'Chennai', }, { value: 'Hydrebad', }];
+let deviceActive = [{ value: 'y', }, { value: 'n', }];
+let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 
 export default class ViewCustomList extends React.Component {
   static navigationOptions = ({navigation})=>({
@@ -173,7 +177,7 @@ export default class ViewCustomList extends React.Component {
     this.setState({overlaystate: "view",})
     this.setState({isVisible: true,})
     if(this.state.modules == "Add/Edit Person"){
-
+      this.setState({itemDB: item});
     } else{
       this.setState({itemDB: item});
     }
@@ -200,7 +204,7 @@ export default class ViewCustomList extends React.Component {
         keyExtractor={(item,index) => index.toString()}
         renderItem={ (data, rowMap) => (
           <TouchableHighlight
-          
+          onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
             style={customstyle.rowFront}
             underlayColor={'#AAA'}
             key={data.item.key}
@@ -275,7 +279,45 @@ export default class ViewCustomList extends React.Component {
           onBackdropPress={() => this.setState({ isVisible: false })}>
             <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
               {this.state.modules == "Add/Edit Person" ?
-              <View><Text>This is Persone edit</Text></View>
+              <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+              <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+                <Text style={customstyle.subheader}>Person Details</Text>
+              </View>
+              <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
+                <View style={customstyle.row_details}>
+                      <Text style={customstyle.row_label}>User ID</Text>
+                      <Text style={customstyle.row_value}>{this.state.itemDB.userid}</Text>
+                    </View>
+                    <View style={customstyle.row_details}>
+                      <Text style={customstyle.row_label}>Person Name</Text>
+                      <Text style={customstyle.row_value}>{this.state.itemDB.name}</Text>
+                    </View>
+                    <View style={customstyle.row_details}>
+                      <Text style={customstyle.row_label}>Team</Text>
+                      <Text style={customstyle.row_value}>{this.state.itemDB.team}</Text>
+                    </View>
+                    <View style={customstyle.row_details}>
+                      <Text style={customstyle.row_label}>Location</Text>
+                      <Text style={customstyle.row_value}>{this.state.itemDB.location}</Text>
+                    </View>
+                    <View style={customstyle.row_details}>
+                      <Text style={customstyle.row_label}>is Admin?</Text>
+                      <Text style={customstyle.row_value}>{this.state.itemDB.isadmin}</Text>
+                    </View> 
+                  </View>
+                  <View style={{flex: 1, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 15}}>
+                        <Button
+                      backgroundColor='#03A9F4'
+                      buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
+                      onPress={() => {this.showEdit()}}
+                      title='EDIT' />
+                      <Button
+                      backgroundColor='#03A9F4'
+                      buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
+                      onPress={() => {this.setState({ isVisible: false })}}
+                      title='DONE' />
+                </View>
+            </View> 
             :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
                   <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
                     <Text style={customstyle.subheader}>Device Details</Text>
@@ -332,8 +374,32 @@ export default class ViewCustomList extends React.Component {
           onBackdropPress={() => this.setState({ isVisible: false })}>
             <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
               {this.state.modules == "Add/Edit Person" ?
-              <View><Text>This is Persone edit</Text></View>
-
+             <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+             <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+               <Text style={customstyle.subheader}>Edit Details</Text>
+             </View>
+             <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
+                   <View style={customstyle.row_details2}>
+                     <Input label='Person Name' placeholder='Person Name' value={this.state.itemDB.name} labelStyle={customstyle.labelSTY}/>
+                   </View>
+                   <View style={customstyle.row_details2}>
+                    <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
+                   </View>
+                    <View style={customstyle.row_details2}>
+                    <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                   </View>
+                   <View style={customstyle.row_details2}>
+                    <Dropdown label='Is Admin?' data={deviceActive} value={this.state.itemDB.isadmin} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                   </View>
+                 </View>
+                 <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
+                     <Button
+                     backgroundColor='#03A9F4'
+                     buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
+                     onPress={() => {this.setState({ isVisible: false })}}
+                     title='SAVE' />
+               </View>
+           </View>    
             :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
                   <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
                     <Text style={customstyle.subheader}>Edit Details</Text>
@@ -342,26 +408,25 @@ export default class ViewCustomList extends React.Component {
                       <View style={customstyle.row_details2}>
                       <ToggleButton.Row
                         onValueChange={value => this.setState({ value })}
-                        value={this.state.value} >
-                          <ToggleButton icon="format-align-left" value="Android" />
-                          <ToggleButton icon="format-align-right" value="AndroidTab" />
-                          <ToggleButton icon="format-align-left" value="iPhone" />
-                          <ToggleButton icon="format-align-right" value="iPad" />
+                        value={this.state.itemDB.devicetype} >
+                          <ToggleButton icon="cellphone-android" value="Android"/>
+                          <ToggleButton icon="tablet-android" value="AndroidTab" />
+                          <ToggleButton icon="cellphone-iphone" value="iPhone" />
+                          <ToggleButton icon="tablet-ipad" value="iPad" />
                       </ToggleButton.Row>
                       </View>
                         <View style={customstyle.row_details2}>
-                          <Input label='Device Name' placeholder='Device Name' value={this.state.itemDB.devicename}/>
+                          <Input label='Device Name' placeholder='Device Name' value={this.state.itemDB.devicename} labelStyle={customstyle.labelSTY}/>
                         </View>
                         <View style={customstyle.row_details2}>
-                         <Input label='Team' placeholder='Team Name' value={this.state.itemDB.team}/>
+                         <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
+                        </View>
+                         <View style={customstyle.row_details2}>
+                         <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                         </View>
                         <View style={customstyle.row_details2}>
-                          <Input label='Location' placeholder='Location' value={this.state.itemDB.location}/>
+                         <Dropdown label='Device active?' data={deviceActive} value={this.state.itemDB.isactive} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                         </View>
-                        <View style={customstyle.row_details2}>
-                          <Text style={customstyle.row_label}>Device active?</Text>
-                          <Text style={customstyle.row_value}>{this.state.itemDB.isactive}</Text>
-                        </View> 
                       </View>
                       <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
                           <Button
@@ -388,6 +453,14 @@ const customstyle = StyleSheet.create(
       alignSelf: "stretch",
       marginBottom: 10,
     },
+    dropdown:{
+      width: '80%',
+      paddingLeft: 10,
+    },
+    labelSTY:{
+      fontWeight: 'normal',
+      fontSize: 14,
+    },
     subheader:{
       elevation: 1,
       fontSize: 18,
@@ -398,6 +471,7 @@ const customstyle = StyleSheet.create(
       paddingRight: 5,
       marginLeft: 10,
       marginRight: 10,
+      alignSelf: 'center',
     },
     row_label:{
       paddingLeft: 10,
