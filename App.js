@@ -19,6 +19,7 @@ import IssuedDeviceList from './Screens/IssuedDeviceList'
 import EntriesDeviceList from './Screens/EntriesDeviceList'
 import AdminPage from './Screens/Admin/AdminPage'
 import ViewCustomList from './Screens/Admin/ViewCustomList'
+import ViewEditPage from './Screens/Admin/ViewEditPage'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -97,6 +98,7 @@ const AppNavigator = createStackNavigator(
     EntriesDeviceList:{screen: EntriesDeviceList},
     AdminPage:{screen: AdminPage},
     ViewCustomList:{screen: ViewCustomList},
+    ViewEditPage:{screen: ViewEditPage},
   },
   {
     initialRouteName: 'HomeScreen',

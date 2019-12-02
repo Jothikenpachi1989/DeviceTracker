@@ -26,7 +26,7 @@ export default class ViewCustomList extends React.Component {
       },headerRight: (
       <Button
         onPress={() => alert("This is help content")}
-        title="Help"
+        title="Add"
         color="#fff"
       /> //Demo button for future use
     ),
@@ -91,6 +91,8 @@ export default class ViewCustomList extends React.Component {
               key: `${i}`,
               userid: results.rows.item(i).userid,
               location: results.rows.item(i).location,
+              fname: results.rows.item(i).firstname,
+              lname: results.rows.item(i).lastname,
               name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname,
               isadmin: results.rows.item(i).isadmin,
               team: results.rows.item(i).team
@@ -159,7 +161,6 @@ export default class ViewCustomList extends React.Component {
         });
       });
     }
-    
   }
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
@@ -172,15 +173,17 @@ export default class ViewCustomList extends React.Component {
   edit(rowMap, rowKey,item) {
     this.setState({overlaystate: "edit",})
     this.setState({isVisible: true,})
+    this.setState({itemDB: item})
   }
   viewOnTap(rowMap, rowKey,item) {
     this.setState({overlaystate: "view",})
     this.setState({isVisible: true,})
     if(this.state.modules == "Add/Edit Person"){
-      this.setState({itemDB: item});
+      this.setState({itemDB: item})
     } else{
-      this.setState({itemDB: item});
+      this.setState({itemDB: item})
     }
+    //this.props.navigation.navigate("ViewEditPage", {titleName:"View"}, {items:item});
 	}
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
@@ -190,10 +193,9 @@ export default class ViewCustomList extends React.Component {
     this.setState({overlaystate: "edit",})
     this.setState({isVisible: true,})
   }
-  getDeviceDetails=(mobassetid)=>{
-    //this.setState({isVisible: true,})
+  onChangeTextFromfields=(text)=>{
+    alert(text);
   }
-  
   render() {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
@@ -277,7 +279,7 @@ export default class ViewCustomList extends React.Component {
         <Overlay
           isVisible={this.state.isVisible}
           onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
+            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
               {this.state.modules == "Add/Edit Person" ?
               <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
               <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
@@ -372,7 +374,7 @@ export default class ViewCustomList extends React.Component {
         <Overlay
           isVisible={this.state.isVisible}
           onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
+            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
               {this.state.modules == "Add/Edit Person" ?
              <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
              <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
@@ -380,7 +382,11 @@ export default class ViewCustomList extends React.Component {
              </View>
              <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
                    <View style={customstyle.row_details2}>
-                     <Input label='Person Name' placeholder='Person Name' value={this.state.itemDB.name} labelStyle={customstyle.labelSTY}/>
+                     <Input onChangeText={text=>this.setState({text})} defaultValue={this.state.itemDB.fname}
+                     label='First Name' placeholder='First Name' value={this.state.text} labelStyle={customstyle.labelSTY}/>
+                   </View>
+                   <View style={customstyle.row_details2}>
+                     <Input label='Last Name' placeholder='Last Name' value={this.state.itemDB.lname} labelStyle={customstyle.labelSTY}/>
                    </View>
                    <View style={customstyle.row_details2}>
                     <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
@@ -406,6 +412,7 @@ export default class ViewCustomList extends React.Component {
                   </View>
                   <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
                       <View style={customstyle.row_details2}>
+                        <Text>{}</Text>
                       <ToggleButton.Row
                         onValueChange={value => this.setState({ value })}
                         value={this.state.itemDB.devicetype} >
@@ -440,7 +447,6 @@ export default class ViewCustomList extends React.Component {
             </View>
           </Overlay> : 
           null
-
         }
         </View>     
   )
@@ -490,6 +496,7 @@ const customstyle = StyleSheet.create(
     }, 
     row_details: {
       borderColor: '#D5D8DC',
+      borderBottomWidth: 1, 
       backgroundColor: '#ffffff',
       flex: 1,
       flexDirection: 'row',  // main axis
