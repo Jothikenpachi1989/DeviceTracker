@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, TextInput, View} from 'react-native';
-import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { ToggleButton } from 'react-native-paper';
-import { Dropdown } from 'react-native-material-dropdown';
+import { StyleSheet, Text, View} from 'react-native';
+import {Animated} from 'react-native';
+import { Button, Icon} from 'react-native-elements';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -12,9 +9,9 @@ let loc = [{ value: 'Chennai', }, { value: 'Hydrebad', }];
 let deviceActive = [{ value: 'y', }, { value: 'n', }];
 let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 
-export default class ViewEditPage extends React.Component {
+export default class ViewDetails extends React.Component {
   static navigationOptions = ({navigation})=>({
-    headerTitle: navigation.getParam('titleName', ''),
+    headerTitle: "View Details",
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -24,43 +21,41 @@ export default class ViewEditPage extends React.Component {
       headerTitleStyle: {
         fontSize: 18,
       },headerRight: (
-      <Button
-        onPress={() => alert("This is help content")}
-        title="Add"
-        color="#fff"
-      /> //Demo button for future use
+      null
     ),
   });
   constructor (props) {
     super(props)
     this.state = {
-      listType: 'FlatList',
-      listViewData: [],
-      
-      //overlaystate: "none",
+      itemDB: [],
       isVisible: false,
-      overlaystate: this.props.navigation.getParam('titleName', ''), //parameter from navigation
-      itemDB: this.props.navigation.getParam('items', ''),
+      itemDB: this.props.navigation.getParam('items',''),
+      modules: this.props.navigation.getParam('titleName', ''), //parameter from navigation
+      
     }
-    
+  //alert(this.state.itemDB.userid);
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
-    });
-    
+    }); 
+  }
+  showEdit=()=>{
+    //this.setState({overlaystate: "edit",})
+    //this.setState({isVisible: true,})
+    if(this.state.modules == "Add/Edit Person"){
+      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
+    } else{
+      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
+    }
   }
   render() {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
     <View style={{flex: 1}}> 
-      {this.state.overlaystate == "view" ? 
         <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
           {this.state.modules == "Add/Edit Person" ?
           <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-          <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-            <Text style={customstyle.subheader}>Person Details</Text>
-          </View>
-          <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
+          <View style={{flex: 4, flexDirection:'column',justifyContent: 'flex-start', paddingBottom: 0}}>
             <View style={customstyle.row_details}>
                   <Text style={customstyle.row_label}>User ID</Text>
                   <Text style={customstyle.row_value}>{this.state.itemDB.userid}</Text>
@@ -86,19 +81,17 @@ export default class ViewEditPage extends React.Component {
                     <Button
                   backgroundColor='#03A9F4'
                   buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                  onPress={() => {this.showEdit()}}
+                  onPress={() => {this.showEdit(this.state.itemDB)}}
                   title='EDIT' />
                   <Button
-                  backgroundColor='#03A9F4'
-                  buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                  onPress={() => {this.setState({ isVisible: false })}}
-                  title='DONE' />
+                      backgroundColor='#FA8072'
+                      type='outline'
+                      buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
+                      onPress={() => {this.setState({ isVisible: false })}}
+                      title='DELETE' />
             </View>
         </View> 
         :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-              <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                <Text style={customstyle.subheader}>Device Details</Text>
-              </View>
               <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
                   {<View style={customstyle.row_details}>
                     <Text style={customstyle.row_label}>Device Type</Text>
@@ -131,94 +124,18 @@ export default class ViewEditPage extends React.Component {
                         <Button
                       backgroundColor='#03A9F4'
                       buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                      onPress={() => {this.showEdit()}}
+                      onPress={() => {this.showEdit(this.state.itemDB)}}
                       title='EDIT' />
-                      <Button
-                      backgroundColor='#03A9F4'
+                     <Button
+                      backgroundColor='#FA8072'
+                      type='outline'
                       buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
                       onPress={() => {this.setState({ isVisible: false })}}
-                      title='DONE' />
+                      title='DELETE' />
                 </View>
             </View>    
             }
-            </View>: 
-          null
-        }
-        {this.state.overlaystate == "edit" ? 
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
-              {this.state.modules == "Add/Edit Person" ?
-             <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-             <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-               <Text style={customstyle.subheader}>Edit Details</Text>
-             </View>
-             <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
-                   <View style={customstyle.row_details2}>
-                     <Input onChangeText={text=>this.setState({text})} defaultValue={this.state.itemDB.fname}
-                     label='First Name' placeholder='First Name' value={this.state.text} labelStyle={customstyle.labelSTY}/>
-                   </View>
-                   <View style={customstyle.row_details2}>
-                     <Input label='Last Name' placeholder='Last Name' value={this.state.itemDB.lname} labelStyle={customstyle.labelSTY}/>
-                   </View>
-                   <View style={customstyle.row_details2}>
-                    <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
-                   </View>
-                    <View style={customstyle.row_details2}>
-                    <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                   </View>
-                   <View style={customstyle.row_details2}>
-                    <Dropdown label='Is Admin?' data={deviceActive} value={this.state.itemDB.isadmin} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                   </View>
-                 </View>
-                 <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
-                     <Button
-                     backgroundColor='#03A9F4'
-                     buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                     onPress={() => {this.setState({ isVisible: false })}}
-                     title='SAVE' />
-               </View>
-           </View>    
-            :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-                  <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                    <Text style={customstyle.subheader}>Edit Details</Text>
-                  </View>
-                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
-                      <View style={customstyle.row_details2}>
-                        <Text>{}</Text>
-                      <ToggleButton.Row
-                        onValueChange={value => this.setState({ value })}
-                        value={this.state.itemDB.devicetype} >
-                          <ToggleButton icon="cellphone-android" value="Android"/>
-                          <ToggleButton icon="tablet-android" value="AndroidTab" />
-                          <ToggleButton icon="cellphone-iphone" value="iPhone" />
-                          <ToggleButton icon="tablet-ipad" value="iPad" />
-                      </ToggleButton.Row>
-                      </View>
-                        <View style={customstyle.row_details2}>
-                          <Input label='Device Name' placeholder='Device Name' value={this.state.itemDB.devicename} labelStyle={customstyle.labelSTY}/>
-                        </View>
-                        <View style={customstyle.row_details2}>
-                         <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
-                        </View>
-                         <View style={customstyle.row_details2}>
-                         <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                        </View>
-                        <View style={customstyle.row_details2}>
-                         <Dropdown label='Device active?' data={deviceActive} value={this.state.itemDB.isactive} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                        </View>
-                      </View>
-                      <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
-                          <Button
-                          backgroundColor='#03A9F4'
-                          buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                          onPress={() => {this.setState({ isVisible: false })}}
-                          title='SAVE' />
-                    </View>
-                </View>    
-            }
-            </View> : 
-          null
-
-        }
+            </View>
         </View>     
   )
   }
@@ -248,6 +165,7 @@ const customstyle = StyleSheet.create(
       paddingRight: 5,
       marginLeft: 10,
       marginRight: 10,
+      //paddingTop: 5,
       alignSelf: 'center',
     },
     row_label:{
@@ -273,23 +191,14 @@ const customstyle = StyleSheet.create(
       flexDirection: 'row',  // main axis
       justifyContent: 'space-between', // main axis
       alignItems: 'center', // cross axis
-      paddingTop: 5,
-      paddingBottom: 5,
+      //paddingTop: 5,
+      //paddingBottom: 5,
       paddingLeft: 5,
       paddingRight: 5,
       marginLeft: 5,
       marginRight: 5,
     },
-    row_details2: {
-      borderColor: '#D5D8DC',
-      backgroundColor: '#ffffff',
-      flex: 1,
-      flexDirection: 'row',  // main axis
-      justifyContent: 'space-between', // main axis
-      alignItems: 'center', // cross axis
-      paddingTop: 5,
-      paddingBottom: 5,
-    },
+    
     row_cell_temp: {
       color: '#111111',
       paddingLeft: 10,

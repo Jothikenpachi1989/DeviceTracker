@@ -171,31 +171,30 @@ export default class ViewCustomList extends React.Component {
     this.closeRow(rowMap, rowKey);
   }
   edit(rowMap, rowKey,item) {
-    this.setState({overlaystate: "edit",})
+    /*this.setState({overlaystate: "edit",})
     this.setState({isVisible: true,})
-    this.setState({itemDB: item})
+    this.setState({itemDB: item})*/
+    if(this.state.modules == "Add/Edit Person"){
+      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: item} );
+    } else{
+      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: item} );
+    }
   }
   viewOnTap(rowMap, rowKey,item) {
-    this.setState({overlaystate: "view",})
-    this.setState({isVisible: true,})
+    /*this.setState({overlaystate: "view",})
+    this.setState({isVisible: true,}) */
     if(this.state.modules == "Add/Edit Person"){
-      this.setState({itemDB: item})
+      this.props.navigation.navigate("ViewDetails", {titleName:this.state.modules,items: item} );
     } else{
-      this.setState({itemDB: item})
+      this.props.navigation.navigate("ViewDetails", {titleName:this.state.modules,items: item} );
     }
-    //this.props.navigation.navigate("ViewEditPage", {titleName:"View"}, {items:item});
+    
 	}
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
 		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
   }
-  showEdit=()=>{
-    this.setState({overlaystate: "edit",})
-    this.setState({isVisible: true,})
-  }
-  onChangeTextFromfields=(text)=>{
-    alert(text);
-  }
+  
   render() {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
@@ -275,180 +274,7 @@ export default class ViewCustomList extends React.Component {
       onSwipeValueChange={this.onSwipeValueChange}
     /> 
       } 
-      {this.state.overlaystate == "view" ? 
-        <Overlay
-          isVisible={this.state.isVisible}
-          onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
-              {this.state.modules == "Add/Edit Person" ?
-              <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-              <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                <Text style={customstyle.subheader}>Person Details</Text>
-              </View>
-              <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
-                <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>User ID</Text>
-                      <Text style={customstyle.row_value}>{this.state.itemDB.userid}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Person Name</Text>
-                      <Text style={customstyle.row_value}>{this.state.itemDB.name}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Team</Text>
-                      <Text style={customstyle.row_value}>{this.state.itemDB.team}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Location</Text>
-                      <Text style={customstyle.row_value}>{this.state.itemDB.location}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>is Admin?</Text>
-                      <Text style={customstyle.row_value}>{this.state.itemDB.isadmin}</Text>
-                    </View> 
-                  </View>
-                  <View style={{flex: 1, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 15}}>
-                        <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                      onPress={() => {this.showEdit()}}
-                      title='EDIT' />
-                      <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                      onPress={() => {this.setState({ isVisible: false })}}
-                      title='DONE' />
-                </View>
-            </View> 
-            :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-                  <View style={{flex: 0.4,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                    <Text style={customstyle.subheader}>Device Details</Text>
-                  </View>
-                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
-                      {<View style={customstyle.row_details}>
-                        <Text style={customstyle.row_label}>Device Type</Text>
-                      {this.state.itemDB.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                              this.state.itemDB.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-                        </View> }
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Device Name</Text>
-                          <Text style={customstyle.row_value}>{this.state.itemDB.devicename}</Text>
-                        </View>
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Device Status</Text>
-                          {this.state.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
-                          (<Text style={customstyle.row_value}>{this.state.itemDB.devicestatus}</Text> ) }
-                        </View>
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Team</Text>
-                          <Text style={customstyle.row_value}>{this.state.itemDB.team}</Text>
-                        </View>
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Location</Text>
-                          <Text style={customstyle.row_value}>{this.state.itemDB.location}</Text>
-                        </View>
-                        <View style={customstyle.row_details}>
-                          <Text style={customstyle.row_label}>Device active?</Text>
-                          <Text style={customstyle.row_value}>{this.state.itemDB.isactive}</Text>
-                        </View> 
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 15}}>
-                            <Button
-                          backgroundColor='#03A9F4'
-                          buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                          onPress={() => {this.showEdit()}}
-                          title='EDIT' />
-                          <Button
-                          backgroundColor='#03A9F4'
-                          buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                          onPress={() => {this.setState({ isVisible: false })}}
-                          title='DONE' />
-                    </View>
-                </View>    
-            }
-            </View>
-          </Overlay> : 
-          null
-        }
-        {this.state.overlaystate == "edit" ? 
-        <Overlay
-          isVisible={this.state.isVisible}
-          onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 0}}>
-              {this.state.modules == "Add/Edit Person" ?
-             <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-             <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-               <Text style={customstyle.subheader}>Edit Details</Text>
-             </View>
-             <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
-                   <View style={customstyle.row_details2}>
-                     <Input onChangeText={text=>this.setState({text})} defaultValue={this.state.itemDB.fname}
-                     label='First Name' placeholder='First Name' value={this.state.text} labelStyle={customstyle.labelSTY}/>
-                   </View>
-                   <View style={customstyle.row_details2}>
-                     <Input label='Last Name' placeholder='Last Name' value={this.state.itemDB.lname} labelStyle={customstyle.labelSTY}/>
-                   </View>
-                   <View style={customstyle.row_details2}>
-                    <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
-                   </View>
-                    <View style={customstyle.row_details2}>
-                    <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                   </View>
-                   <View style={customstyle.row_details2}>
-                    <Dropdown label='Is Admin?' data={deviceActive} value={this.state.itemDB.isadmin} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                   </View>
-                 </View>
-                 <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
-                     <Button
-                     backgroundColor='#03A9F4'
-                     buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                     onPress={() => {this.setState({ isVisible: false })}}
-                     title='SAVE' />
-               </View>
-           </View>    
-            :   <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-                  <View style={{flex: 0.3,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                    <Text style={customstyle.subheader}>Edit Details</Text>
-                  </View>
-                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
-                      <View style={customstyle.row_details2}>
-                        <Text>{}</Text>
-                      <ToggleButton.Row
-                        onValueChange={value => this.setState({ value })}
-                        value={this.state.itemDB.devicetype} >
-                          <ToggleButton icon="cellphone-android" value="Android"/>
-                          <ToggleButton icon="tablet-android" value="AndroidTab" />
-                          <ToggleButton icon="cellphone-iphone" value="iPhone" />
-                          <ToggleButton icon="tablet-ipad" value="iPad" />
-                      </ToggleButton.Row>
-                      </View>
-                        <View style={customstyle.row_details2}>
-                          <Input label='Device Name' placeholder='Device Name' value={this.state.itemDB.devicename} labelStyle={customstyle.labelSTY}/>
-                        </View>
-                        <View style={customstyle.row_details2}>
-                         <Dropdown label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
-                        </View>
-                         <View style={customstyle.row_details2}>
-                         <Dropdown label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                        </View>
-                        <View style={customstyle.row_details2}>
-                         <Dropdown label='Device active?' data={deviceActive} value={this.state.itemDB.isactive} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
-                        </View>
-                      </View>
-                      <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10}}>
-                          <Button
-                          backgroundColor='#03A9F4'
-                          buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:30, width:100}}
-                          onPress={() => {this.setState({ isVisible: false })}}
-                          title='SAVE' />
-                    </View>
-                </View>    
-            }
-            </View>
-          </Overlay> : 
-          null
-        }
-        </View>     
+  </View>     
   )
   }
 }
