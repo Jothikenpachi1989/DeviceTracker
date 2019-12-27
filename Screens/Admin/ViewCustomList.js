@@ -175,9 +175,9 @@ export default class ViewCustomList extends React.Component {
     this.setState({isVisible: true,})
     this.setState({itemDB: item})*/
     if(this.state.modules == "Add/Edit Person"){
-      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: item} );
+      this.props.navigation.push("EditDetails", {titleName:this.state.modules,items: item} );
     } else{
-      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: item} );
+      this.props.navigation.push("EditDetails", {titleName:this.state.modules,items: item} );
     }
   }
   viewOnTap(rowMap, rowKey,item) {

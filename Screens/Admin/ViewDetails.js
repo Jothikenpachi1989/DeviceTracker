@@ -43,9 +43,9 @@ export default class ViewDetails extends React.Component {
     //this.setState({overlaystate: "edit",})
     //this.setState({isVisible: true,})
     if(this.state.modules == "Add/Edit Person"){
-      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
+      this.props.navigation.push("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
     } else{
-      this.props.navigation.navigate("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
+      this.props.navigation.push("EditDetails", {titleName:this.state.modules,items: this.state.itemDB} );
     }
   }
   render() {
