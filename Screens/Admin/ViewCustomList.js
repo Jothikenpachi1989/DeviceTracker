@@ -3,8 +3,6 @@ import { StyleSheet, Text, TextInput, View} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { ToggleButton } from 'react-native-paper';
-import { Dropdown } from 'react-native-material-dropdown';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -23,12 +21,14 @@ export default class ViewCustomList extends React.Component {
       },
       headerTitleStyle: {
         fontSize: 18,
-      },headerRight: (
-      <Button
-        onPress={() => alert("This is help content")}
-        title="Add"
-        color="#fff"
-      /> //Demo button for future use
+      },
+      headerLeft: null,
+      headerRight: (
+        <TouchableOpacity
+        onPress={() => navigation.navigate('AdminPage',)}
+        style={{paddingRight:10,}}>
+          <Text style={{ color: '#FFF', fontSize: 14 }}>back</Text>
+      </TouchableOpacity> 
     ),
   });
   constructor (props) {
@@ -199,8 +199,45 @@ export default class ViewCustomList extends React.Component {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
     <View style={{flex: 1}}>
-      {this.state.modules == "Add/Edit Person" ? 
-      <SwipeListView
+      <View style={{flex: 1, paddingBottom:50}}>
+        {this.state.modules == "Add/Edit Person" ? 
+        <SwipeListView
+          data={this.state.listViewData}
+          keyExtractor={(item,index) => index.toString()}
+          renderItem={ (data, rowMap) => (
+            <TouchableHighlight
+            onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
+              style={customstyle.rowFront}
+              underlayColor={'#AAA'}
+              key={data.item.key}
+            >
+            <View style={customstyle.row}>
+            <View style={customstyle.row_cell_icon}>
+            <Avatar rounded icon={{ name: 'person' }} />
+            </View>
+                <View style={customstyle.row_cell_devicename}>
+                  <Text>{data.item.name}</Text>
+                </View>
+                <View style={customstyle.row_cell_devicename}>
+                  <Text>{data.item.userid}</Text>
+                </View>
+                <View style={customstyle.row_cell_place}>
+                <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
+              </View>
+              </View>
+            </TouchableHighlight>
+          )}
+          renderHiddenItem={ (data, rowMap) => (
+            <View style={customstyle.rowBack}>
+              <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.userid) }>
+              <Text style={customstyle.backTextWhite}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          rightOpenValue={-70}
+          onSwipeValueChange={this.onSwipeValueChange}
+        />  : 
+        <SwipeListView
         data={this.state.listViewData}
         keyExtractor={(item,index) => index.toString()}
         renderItem={ (data, rowMap) => (
@@ -211,83 +248,59 @@ export default class ViewCustomList extends React.Component {
             key={data.item.key}
           >
           <View style={customstyle.row}>
-          <View style={customstyle.row_cell_icon}>
-          <Avatar rounded icon={{ name: 'person' }} />
-          </View>
-              <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.name}</Text>
+              <View style={customstyle.row_cell_icon}>
+                {data.item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
+                    data.item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
               </View>
               <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.userid}</Text>
+                <Text>{data.item.devicename}</Text>
+              </View>
+              <View style={customstyle.row_cell_devicename}>
+                <Text>{data.item.assetid}</Text>
               </View>
               <View style={customstyle.row_cell_place}>
-              <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
-             </View>
+                <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
+              </View>
             </View>
           </TouchableHighlight>
         )}
         renderHiddenItem={ (data, rowMap) => (
           <View style={customstyle.rowBack}>
-            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.userid) }>
+            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
             <Text style={customstyle.backTextWhite}>Remove</Text>
             </TouchableOpacity>
           </View>
         )}
         rightOpenValue={-70}
         onSwipeValueChange={this.onSwipeValueChange}
-      />  : 
-       <SwipeListView
-      data={this.state.listViewData}
-      keyExtractor={(item,index) => index.toString()}
-      renderItem={ (data, rowMap) => (
-        <TouchableHighlight
-        onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
-          style={customstyle.rowFront}
-          underlayColor={'#AAA'}
-          key={data.item.key}
-        >
-        <View style={customstyle.row}>
-            <View style={customstyle.row_cell_icon}>
-              {data.item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                  data.item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-            </View>
-            <View style={customstyle.row_cell_devicename}>
-              <Text>{data.item.devicename}</Text>
-            </View>
-            <View style={customstyle.row_cell_devicename}>
-              <Text>{data.item.assetid}</Text>
-            </View>
-            <View style={customstyle.row_cell_place}>
-              <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
-            </View>
-          </View>
-        </TouchableHighlight>
-      )}
-      renderHiddenItem={ (data, rowMap) => (
-        <View style={customstyle.rowBack}>
-          <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
-          <Text style={customstyle.backTextWhite}>Remove</Text>
-          </TouchableOpacity>
+      /> 
+        }
+      </View>
+      <View style={customstyle.bottomView} >
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('AddDetails',{titleName:this.state.modules})}
+          style={customstyle.button}>
+            <Text style={{ color: '#FFF', fontSize: 14 }}>Add New</Text>
+        </TouchableOpacity> 
+        
         </View>
-      )}
-      rightOpenValue={-70}
-      onSwipeValueChange={this.onSwipeValueChange}
-    /> 
-      } 
-  </View>     
+  </View>   
+    
   )
   }
 }
 const customstyle = StyleSheet.create(
   {
-    container: {
-      marginTop: 10,
-      alignSelf: "stretch",
-      marginBottom: 10,
-    },
-    dropdown:{
-      width: '80%',
-      paddingLeft: 10,
+    bottomView:{
+      width: '100%', 
+      height: 50, 
+      flex: 5,
+      backgroundColor: '#FFFFFF', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      position: 'absolute',
+      bottom: 0,
+      tintColor: '#ffffff',
     },
     labelSTY:{
       fontWeight: 'normal',
@@ -410,5 +423,17 @@ const customstyle = StyleSheet.create(
     backRightBtnRight: {
       backgroundColor: 'red',
       right: 0
+    },
+    button: {
+      backgroundColor: '#3498DB',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 12,
+      width: 200,
+      marginRight:40,
+      marginLeft:40,
+      marginTop:10,
+      marginBottom: 10,
+      borderRadius:10,
     },
   });

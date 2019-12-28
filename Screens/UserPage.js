@@ -238,7 +238,6 @@ const customstyle = StyleSheet.create(
       alignSelf: "stretch",
       flex: 1,
       marginBottom: 10,
-
       backgroundColor: '#EBF5FB',
     },
     row: {

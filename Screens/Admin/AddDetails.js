@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, TextInput, View} from 'react-native';
-import {Animated,TouchableOpacity,TouchableHighlight,Alert} from 'react-native';
-import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
+import { StyleSheet, Text,  View} from 'react-native';
+import {Animated,TouchableOpacity,Alert} from 'react-native';
+import { Input} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Dropdown } from 'react-native-material-dropdown';
 import {KeyboardAvoidingView} from 'react-native';
@@ -13,9 +13,9 @@ let flag = [{ value: 'y', }, { value: 'n', }];
 let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 let devicetype = [{ value: 'Android', }, { value: 'iPhone', },{ value: 'AndroidTab', }, { value: 'iPad', }];
 
-export default class EditDetails extends React.Component {
+export default class AddDetails extends React.Component {
   static navigationOptions = ({navigation})=>({
-    headerTitle: "Edit Details",
+    headerTitle: "Add New",
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -31,14 +31,11 @@ export default class EditDetails extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-       itemDB: [],
+       newUserId:"",
        updateVal: [],
       isVisible: false,
-      itemDB: this.props.navigation.getParam('items',''),
-      updateVal: this.props.navigation.getParam('items',''),
       modules: this.props.navigation.getParam('titleName', ''), //parameter from navigation
      }
-   
   }
   onChange = (key, val) => {
     if(this.state.modules == "Add/Edit Person"){ 
@@ -67,16 +64,30 @@ export default class EditDetails extends React.Component {
       }
     }
   }
+  generateUserId=()=>{
+    db.transaction(tx => {
+      tx.executeSql('select * from users where location=?', [this.state.updateVal.location], (tx, results) => {
+        if(this.state.updateVal.location == "Chennai"){
+          this.setState({newUserId:"mcl-" + (results.rows.length+1)});
+        }else{
+          this.setState({newUserId:"hyd-" + (results.rows.length+1)});
+        }    
+      });
+    });
+  }
   updateChangesToDB=()=>{
     if(this.state.modules == "Add/Edit Person"){
+      this.generateUserId(); //generate user id from the existing list
+      alert(this.state.newUserId);
       db.transaction((tx)=> {
         tx.executeSql(
-          'UPDATE users set firstname=?, lastname=? , isadmin=?, location=?, team=? where userid=?',
-          [this.state.updateVal.fname, this.state.updateVal.lname, this.state.updateVal.isadmin, this.state.updateVal.location, this.state.updateVal.team,this.state.updateVal.userid],
+          'INSERT INTO users [(userId, firstname, lastname, isadmin, location, team)] VALUES (?,?,?,?,?,?)',
+          ["mcl-7", this.state.updateVal.fname, this.state.updateVal.lname, this.state.updateVal.isadmin, this.state.updateVal.location, this.state.updateVal.team],
           (tx, results) => {
             console.log('Results',results.rowsAffected);
+            alert(results.rowsAffected);
             if(results.rowsAffected>0){
-              Alert.alert( 'Success', 'User details updated successfully',
+              Alert.alert( 'Success', 'User details added successfully',
                 [
                   {text: 'Ok', onPress: () => this.props.navigation.push('ViewCustomList', {titleName:"Add/Edit Person"})},
                   //{text: 'Ok', onPress: () => this.props.},
@@ -84,7 +95,7 @@ export default class EditDetails extends React.Component {
                 { cancelable: false }
               );
             }else{
-              alert('Updation Failed');
+              alert('INSERT Failed');
             }
           });
         });
@@ -110,7 +121,7 @@ export default class EditDetails extends React.Component {
           });
         });
     }
-    //alert(this.state.updateVal.assetid);
+    //alert(this.state.updateVal.fname);
   }
   render() {
    return (
@@ -121,24 +132,24 @@ export default class EditDetails extends React.Component {
           <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start', borderWidth: 1, borderColor: '#D5D8DC'}}>
              <View style={{flex: 1, flexDirection:'column', paddingBottom: 5}}>
                    <View style={customstyle.row_details2}>
-                     <Input onChangeText={fname=>this.onChange('fname',fname)} defaultValue={this.state.itemDB.fname}
+                     <Input onChangeText={fname=>this.onChange('fname',fname)} defaultValue={""}
                      label='First Name' placeholder='First Name' value={this.state.fname} labelStyle={customstyle.labelSTY}/>
                    </View>
                    <View style={customstyle.row_details2}>
-                     <Input onChangeText={lname=>this.onChange('lname',lname)} defaultValue={this.state.itemDB.lname}
+                     <Input onChangeText={lname=>this.onChange('lname',lname)} defaultValue={""}
                      label='Last Name' placeholder='Last Name' value={this.state.lname} labelStyle={customstyle.labelSTY}/>
                    </View>
                    <View style={customstyle.row_details2}>
                     <Dropdown onChangeText={team => this.onChange('team',team)} 
-                    label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
+                    label='Team' data={team} value={""} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
                    </View>
                     <View style={customstyle.row_details2}>
                     <Dropdown onChangeText={loc => this.onChange('location',loc)}
-                    label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                    label='Location' data={loc} value={""} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                    </View>
                    <View style={customstyle.row_details2}>
                     <Dropdown onChangeText={flag => this.onChange('isAdmin',flag)}
-                    label='Is Admin?' data={flag} value={this.state.itemDB.isadmin} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                    label='Is Admin?' data={flag} value={"n"} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                    </View>
             </View>
             <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 5}}>
@@ -157,20 +168,20 @@ export default class EditDetails extends React.Component {
                         </View>
                     
                       <View style={customstyle.row_details2}>
-                        <Input onChangeText={name=>this.onChange('devicename',name)} defaultValue={this.state.itemDB.devicename}
+                        <Input onChangeText={name=>this.onChange('devicename',name)} defaultValue={""}
                           label='Device Name' placeholder='Device Name' value={this.state.name} labelStyle={customstyle.labelSTY}/>
                         </View>
                         <View style={customstyle.row_details2}>
                          <Dropdown onChangeText={team=>this.onChange('team',team)}
-                         label='Team' data={team} value={this.state.itemDB.team} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
+                         label='Team' data={team} value={""} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
                         </View>
                          <View style={customstyle.row_details2}>
                          <Dropdown onChangeText={loc => this.onChange('location',loc)}
-                         label='Location' data={loc} value={this.state.itemDB.location} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                         label='Location' data={loc} value={""} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                         </View>
                         <View style={customstyle.row_details2}>
                          <Dropdown onChangeText={flag => this.onChange('isActive',flag)}
-                         label='Device active?' data={flag} value={this.state.itemDB.isactive} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                         label='Device active?' data={flag} value={"y"} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
                         </View>
                       </View>
                     <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 5}}>
