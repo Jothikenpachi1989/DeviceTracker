@@ -24,7 +24,7 @@ const list = [
   {
     title: 'Reports',
     icon: 'av-timer',
-    link: 'ViewCustomList'
+    link: 'ReportSummary'
   },
   {
     title: 'Settings',

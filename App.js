@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { addUser } from './actions/user';
 import PersonScanPage from './Screens/PersonScanPage';
 import DeviceScanPage from './Screens/DeviceScanPage';
-import { createStackNavigator, createAppContainer } from "react-navigation";
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from "react-navigation";
 import DeviceList from './Screens/DeviceList';
 import HomePage from './Screens/HomePage'
 import UserPage from './Screens/UserPage'
@@ -22,6 +22,7 @@ import ViewCustomList from './Screens/Admin/ViewCustomList'
 import ViewDetails from './Screens/Admin/ViewDetails'
 import EditDetails from './Screens/Admin/EditDetails'
 import AddDetails from './Screens/Admin/AddDetails'
+import ReportSummary from './Screens/Admin/Reports/ReportSummary'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -103,6 +104,7 @@ const AppNavigator = createStackNavigator(
     ViewDetails:{screen: ViewDetails},
     EditDetails: {screen: EditDetails},
     AddDetails: {screen: AddDetails},
+    ReportSummary: {screen: ReportSummary},
   },
   {
     initialRouteName: 'HomeScreen',
