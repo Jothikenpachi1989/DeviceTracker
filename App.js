@@ -108,6 +108,7 @@ const AppNavigator = createStackNavigator(
     initialRouteName: 'HomeScreen',
   }
 );
+
 const AppContainer = createAppContainer(AppNavigator);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

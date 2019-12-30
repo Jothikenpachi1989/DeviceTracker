@@ -100,28 +100,9 @@ export default class AddDetails extends React.Component {
           });
         });
     } else{
-      db.transaction((tx)=> {
-        tx.executeSql(
-          'UPDATE devices set devicename=?, isactive=? , location=?, team=?, devicetype=?, OS=? where assetid=?',
-          [this.state.updateVal.devicename, this.state.updateVal.isactive, this.state.updateVal.location, this.state.updateVal.team, this.state.updateVal.devicetype,this.state.updateVal.os,this.state.updateVal.assetid],
-          (tx, results) => {
-            console.log('Results',results.rowsAffected);
-           
-            if(results.rowsAffected>0){
-              Alert.alert( 'Success', 'Device details updated successfully',
-                [
-                  {text: 'Ok', onPress: () => this.props.navigation.push('ViewCustomList', {titleName:"Add/Edit Device"})},
-                  //{text: 'Ok', onPress: () => this.props.},
-                ],
-                { cancelable: false }
-              );
-            }else{
-              alert('Updation Failed');
-            }
-          });
-        });
+      
     }
-    //alert(this.state.updateVal.fname);
+    
   }
   render() {
    return (
