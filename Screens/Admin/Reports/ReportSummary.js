@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View,Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button,Avatar} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import {PieChart} from "react-native-chart-kit";
+import {LineChart} from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 
 var SQlite = require('react-native-sqlite-storage')
@@ -99,14 +99,48 @@ export default class ReportSummary extends React.Component {
     <View style={{flex: 0.2, backgroundColor: '#444444'}}>
     </View>
       <View style={{flex: 1, backgroundColor: '#EBF5FB'}}>
-      <PieChart
-        data={data}
-        chartConfig={chartConfig}
-        accessor="population"
-        backgroundColor="transparent"
-        paddingLeft="15"
-        absolute
-      />
+      <LineChart
+    data={{
+      labels: ["January", "February", "March", "April", "May", "June"],
+      datasets: [
+        {
+          data: [
+            Math.random() * 100,
+            Math.random() * 100,
+            Math.random() * 100,
+            Math.random() * 100,
+            Math.random() * 100,
+            Math.random() * 100
+          ]
+        }
+      ]
+    }}
+    width={Dimensions.get("window").width} // from react-native
+    height={220}
+    yAxisLabel={"$"}
+    yAxisSuffix={"k"}
+    chartConfig={{
+      backgroundColor: "#e26a00",
+      backgroundGradientFrom: "#fb8c00",
+      backgroundGradientTo: "#ffa726",
+      decimalPlaces: 2, // optional, defaults to 2dp
+      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+      style: {
+        borderRadius: 16
+      },
+      propsForDots: {
+        r: "6",
+        strokeWidth: "2",
+        stroke: "#ffa726"
+      }
+    }}
+    bezier
+    style={{
+      marginVertical: 8,
+      borderRadius: 16
+    }}
+  />
       </View>
       <View style={{flex: 2}}>
       <SwipeListView
