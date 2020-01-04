@@ -8,7 +8,7 @@ import {KeyboardAvoidingView} from 'react-native';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-let loc = [{ value: 'Chennai', }, { value: 'Hydrebad', }];
+let loc = [{ value: 'Chennai', }, { value: 'Hydrabad', }];
 let flag = [{ value: 'y', }, { value: 'n', }];
 let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 let devicetype = [{ value: 'Android', }, { value: 'iPhone', },{ value: 'AndroidTab', }, { value: 'iPad', }];
@@ -32,6 +32,7 @@ export default class AddDetails extends React.Component {
     super(props)
     this.state = {
        newUserId:"",
+       newAssetId:"",
        updateVal: [],
       isVisible: false,
       modules: this.props.navigation.getParam('titleName', ''), //parameter from navigation
@@ -61,6 +62,8 @@ export default class AddDetails extends React.Component {
         this.state.updateVal.location= val;
       }else if(key=="isActive"){
         this.state.updateVal.isactive= val;
+      }else if(key=="os"){
+        this.state.updateVal.os= val;
       }
     }
   }
@@ -75,17 +78,28 @@ export default class AddDetails extends React.Component {
       });
     });
   }
+  generateAssetId=()=>{
+    db.transaction(tx => {
+      tx.executeSql('select * from devices where location=?', [this.state.updateVal.location], (tx, results) => {
+        if(this.state.updateVal.location == "Chennai"){
+          this.setState({newAssetId:"Mob-" + (results.rows.length+1)});
+        }else{
+          this.setState({newAssetId:"Mob-" + (results.rows.length+21)});
+        }    
+      });
+    });
+  }
   updateChangesToDB=()=>{
     if(this.state.modules == "Add/Edit Person"){
       this.generateUserId(); //generate user id from the existing list
-      alert(this.state.newUserId);
+      //alert(this.state.newUserId);
       db.transaction((tx)=> {
         tx.executeSql(
-          'INSERT INTO users [(userId, firstname, lastname, isadmin, location, team)] VALUES (?,?,?,?,?,?)',
-          ["mcl-7", this.state.updateVal.fname, this.state.updateVal.lname, this.state.updateVal.isadmin, this.state.updateVal.location, this.state.updateVal.team],
+          'INSERT INTO users (userId, firstname, lastname, isadmin, location, team) VALUES (?,?,?,?,?,?)',
+          [this.state.newUserId, this.state.updateVal.fname, this.state.updateVal.lname, this.state.updateVal.isadmin, this.state.updateVal.location, this.state.updateVal.team],
           (tx, results) => {
             console.log('Results',results.rowsAffected);
-            alert(results.rowsAffected);
+           // alert(results.rowsAffected);
             if(results.rowsAffected>0){
               Alert.alert( 'Success', 'User details added successfully',
                 [
@@ -100,7 +114,28 @@ export default class AddDetails extends React.Component {
           });
         });
     } else{
-      
+      this.generateAssetId(); //generate user id from the existing list
+      alert(this.state.newAssetId);
+      db.transaction((tx)=> {
+        tx.executeSql(
+          'INSERT INTO devices (assetid, devicename, isactive, location, team, devicetype, OS) VALUES (?,?,?,?,?,?,?)',
+          [this.state.newAssetId, this.state.updateVal.devicename, this.state.updateVal.isactive, this.state.updateVal.location, this.state.updateVal.team,this.state.updateVal.devicetype,this.state.updateVal.os],
+          (tx, results) => {
+            console.log('Results',results.rowsAffected);
+           // alert(results.rowsAffected);
+            if(results.rowsAffected>0){
+              Alert.alert( 'Success', 'Device details added successfully',
+                [
+                  {text: 'Ok', onPress: () => this.props.navigation.push('ViewCustomList', {titleName:"Add/Edit Device"})},
+                  //{text: 'Ok', onPress: () => this.props.},
+                ],
+                { cancelable: false }
+              );
+            }else{
+              alert('INSERT Failed');
+            }
+          });
+        });
     }
     
   }
@@ -147,7 +182,6 @@ export default class AddDetails extends React.Component {
                          <Dropdown onChangeText={devicetype=>this.onChange('devicetype',devicetype)}
                          label='Device Type' data={devicetype} value={this.state.updateVal.devicetype} containerStyle={customstyle.dropdown} labelFontSize={14.0} />
                         </View>
-                    
                       <View style={customstyle.row_details2}>
                         <Input onChangeText={name=>this.onChange('devicename',name)} defaultValue={""}
                           label='Device Name' placeholder='Device Name' value={this.state.name} labelStyle={customstyle.labelSTY}/>
@@ -163,6 +197,10 @@ export default class AddDetails extends React.Component {
                         <View style={customstyle.row_details2}>
                          <Dropdown onChangeText={flag => this.onChange('isActive',flag)}
                          label='Device active?' data={flag} value={"y"} containerStyle={customstyle.dropdown}  labelFontSize={14.0} />
+                        </View>
+                        <View style={customstyle.row_details2}>
+                        <Input onChangeText={os=>this.onChange('os',os)} defaultValue={""}
+                          label='OS Version' placeholder='OS Version' value={this.state.os} labelStyle={customstyle.labelSTY}/>
                         </View>
                       </View>
                     <View style={{flex: 0.2, flexDirection: 'row',alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 5}}>

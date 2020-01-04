@@ -80,7 +80,7 @@ export default class DeviceList extends React.Component {
           temp.push({
             key: `${i}`,
             assetid: results.rows.item(i).assetid,
-            pickuptime: results.rows.item(i).pickup,
+            pickuptime: results.rows.item(i).pickuptime,
             devicename: results.rows.item(i).devicename,
             returntime: results.rows.item(i).returntime,
           });
@@ -150,7 +150,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
   this.setState({isVisible: true});
 }
 getPickUpTime=(assetid)=>{
-  return this.state.entriesViewData.filter(edata => edata.assetid == assetid);
+  //return this.state.entriesViewData.filter(edata => edata.assetid == assetid);
 }
 
   render() {
@@ -191,7 +191,7 @@ getPickUpTime=(assetid)=>{
                       <Text>{data.item.location}</Text>
                     </View> */}
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_devicename}></Text>) : 
-                  (<Text style={customstyle.row_cell_devicename}>pickup</Text> ) }
+                  (<Text style={customstyle.row_cell_devicename}>{this.getPickUpTime(data.item.assetid)}</Text> ) }
                     <View style={customstyle.row_cell_place}>
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_available}>Available</Text>) : 
                   (<Text style={customstyle.row_cell_temp}>{data.item.devicestatus}</Text> ) }

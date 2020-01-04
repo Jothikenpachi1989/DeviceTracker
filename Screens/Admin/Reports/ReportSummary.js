@@ -7,52 +7,7 @@ import { Dimensions } from "react-native";
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-const chartConfig = {
-  backgroundGradientFrom: "#1E2923",
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#08130D",
-  backgroundGradientToOpacity: 0.5,
-  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-  strokeWidth: 2, // optional, default 3
-  barPercentage: 0.5
-};
-const data = [
-  {
-    name: "Seoul",
-    population: 21500000,
-    color: "rgba(131, 167, 234, 1)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Toronto",
-    population: 2800000,
-    color: "#F00",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Beijing",
-    population: 527612,
-    color: "red",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "New York",
-    population: 8538000,
-    color: "#ffffff",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Moscow",
-    population: 11920000,
-    color: "rgb(0, 0, 255)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  }
-];
+
 export default class ReportSummary extends React.Component {
   static navigationOptions = ({navigation})=>({
     headerTitle: navigation.getParam('titleName', ''),
@@ -77,22 +32,33 @@ export default class ReportSummary extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      listType: 'FlatList',
-      listViewData: [],
-      
+      entriesViewData: [],
+
     }
-    this.rowSwipeAnimatedValues = {};
-		Array(20).fill('').forEach((_, i) => {
-			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
+this.getWeekData('2019-12-29 16:11:47', '2019-12-31');
+  }
+  
+  getWeekData=(fromDate,toDate)=>{
+    
+    db.transaction(tx => {
+      tx.executeSql('SELECT * FROM entries where pickuptime=?', [fromDate], (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push({
+            key: `${i}`,
+            assetid: results.rows.item(i).assetid,
+            pickuptime: results.rows.item(i).pickuptime,
+            devicename: results.rows.item(i).devicename,
+            returntime: results.rows.item(i).returntime,
+           
+          });
+        }
+        alert(results.rows.length);
+        this.setState({entriesViewData: temp,});
+      });
     });
-   
+    
   }
-  
-	onSwipeValueChange = (swipeData) => {
-		const { key, value } = swipeData;
-		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
-  }
-  
   render() {
    return (
   <View style={{flex: 1}}>
@@ -123,6 +89,7 @@ export default class ReportSummary extends React.Component {
       backgroundColor: "#e26a00",
       backgroundGradientFrom: "#fb8c00",
       backgroundGradientTo: "#ffa726",
+    
       decimalPlaces: 2, // optional, defaults to 2dp
       color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
       labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -144,7 +111,7 @@ export default class ReportSummary extends React.Component {
       </View>
       <View style={{flex: 2}}>
       <SwipeListView
-          data={this.state.listViewData}
+          data={this.state.entriesViewData}
           keyExtractor={(item,index) => index.toString()}
           renderItem={ (data, rowMap) => (
             <TouchableHighlight
@@ -158,10 +125,10 @@ export default class ReportSummary extends React.Component {
             <Avatar rounded icon={{ name: 'person' }} />
             </View>
                 <View style={customstyle.row_cell_devicename}>
-                  <Text>{data.item.name}</Text>
+                  <Text>{data.item.devicename}</Text>
                 </View>
                 <View style={customstyle.row_cell_devicename}>
-                  <Text>{data.item.userid}</Text>
+                  <Text>{data.item.assetid}</Text>
                 </View>
                 <View style={customstyle.row_cell_place}>
                 <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
