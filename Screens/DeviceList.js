@@ -33,6 +33,7 @@ export default class DeviceList extends React.Component {
       listType: 'FlatList',
       listViewData: [],
       entriesViewData: [],
+      
       isVisible: false,
       deviceType: "All", 
       deviceAvailability: "All",
@@ -57,7 +58,8 @@ export default class DeviceList extends React.Component {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
     });
     db.transaction(tx => {
-      tx.executeSql('select assetid,devicetype, devicename, team, location, devicestatus from all_device_detailes', [], (tx, results) => {
+      //tx.executeSql('select assetid,devicetype, devicename, team, location, devicestatus from all_device_detailes', [], (tx, results) => {
+        tx.executeSql('SELECT * FROM devices_withPickuptime', [], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push({
@@ -67,25 +69,11 @@ export default class DeviceList extends React.Component {
             devicename: results.rows.item(i).devicename,
             devicetype: results.rows.item(i).devicetype,
             team: results.rows.item(i).team,
-            devicestatus: results.rows.item(i).devicestatus
+            devicestatus: results.rows.item(i).devicestatus,
+            pickup: results.rows.item(i).pick,
           });
         }
         this.setState({listViewData: temp,});
-      });
-    });
-    db.transaction(tx => {
-      tx.executeSql('select * from entries', [], (tx, results) => {
-        var temp = [];
-        for (let i = 0; i < results.rows.length; ++i) {
-          temp.push({
-            key: `${i}`,
-            assetid: results.rows.item(i).assetid,
-            pickuptime: results.rows.item(i).pickuptime,
-            devicename: results.rows.item(i).devicename,
-            returntime: results.rows.item(i).returntime,
-          });
-        }
-        this.setState({entriesViewData: temp,});
       });
     });
   }
@@ -112,7 +100,6 @@ export default class DeviceList extends React.Component {
   }
 getDeviceDetails=(mobassetid,devicestatus)=>{
   var temp = [];
-  
   if(devicestatus == "returned"){
     db.transaction(tx => {
       tx.executeSql('select * from devices where assetid=?', [mobassetid], (tx, results) => {
@@ -130,7 +117,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
     });
   } else{
     db.transaction(tx => {
-      tx.executeSql('select * from devices,entries where devices.assetid = entries.assetid and returntime is NULL and devices.assetid = ?', [mobassetid], (tx, results) => {
+      tx.executeSql('select * from devices,entries where devices.assetid = entries.assetid and entries.returntime is NULL and devices.assetid = ?', [mobassetid], (tx, results) => {
         for (let i = 0; i < results.rows.length; ++i) {
           this.setState({device_assetid: results.rows.item(i).assetid});
           this.setState({device_devicename: results.rows.item(i).devicename});
@@ -150,7 +137,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
   this.setState({isVisible: true});
 }
 getPickUpTime=(assetid)=>{
-  //return this.state.entriesViewData.filter(edata => edata.assetid == assetid);
+  
 }
 
   render() {
@@ -186,12 +173,8 @@ getPickUpTime=(assetid)=>{
                     <View style={customstyle.row_cell_devicename}>
                       <Text>{data.item.devicename}</Text>
                     </View>
-                    {/* <View style={customstyle.row_cell_devicename}>
-                      <Text>{data.item.team}</Text>
-                      <Text>{data.item.location}</Text>
-                    </View> */}
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_devicename}></Text>) : 
-                  (<Text style={customstyle.row_cell_devicename}>{this.getPickUpTime(data.item.assetid)}</Text> ) }
+                  (<Text style={customstyle.row_cell_devicename}>{data.item.pick}</Text> ) }
                     <View style={customstyle.row_cell_place}>
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_available}>Available</Text>) : 
                   (<Text style={customstyle.row_cell_temp}>{data.item.devicestatus}</Text> ) }
