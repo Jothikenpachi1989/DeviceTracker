@@ -174,7 +174,7 @@ getPickUpTime=(assetid)=>{
                       <Text>{data.item.devicename}</Text>
                     </View>
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_devicename}></Text>) : 
-                  (<Text style={customstyle.row_cell_devicename}>{data.item.pick}</Text> ) }
+                  (<Text style={customstyle.row_cell_devicename}>{data.item.pickup}</Text> ) }
                     <View style={customstyle.row_cell_place}>
                     {data.item.devicestatus == "returned" ? (<Text style={customstyle.row_cell_available}>Available</Text>) : 
                   (<Text style={customstyle.row_cell_temp}>{data.item.devicestatus}</Text> ) }
