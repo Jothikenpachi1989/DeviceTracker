@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, Alert} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Overlay, Card} from 'react-native-elements';
+import { Button, Icon, Overlay} from 'react-native-elements';
 import DropdownMenu from 'react-native-dropdown-menu';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Item } from 'native-base';
@@ -33,13 +33,12 @@ export default class DeviceList extends React.Component {
     this.state = {
       listType: 'FlatList',
       listViewData: [],
-      //entriesViewData: [],
       deviceViewData: [],
+      //deviceIssuedData: [],
       isVisible: false,
       deviceType: "All", 
       deviceAvailability: "All",
     }
-    
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
@@ -80,7 +79,12 @@ export default class DeviceList extends React.Component {
 	rightKey(rowMap, rowKey,mobassetid,devicestatus) {
     this.closeRow(rowMap, rowKey);
     this.getDeviceDetails(mobassetid,devicestatus);
-	}
+    this.setState({isVisible: true});
+  }
+  viewOnTap(mobassetid,devicestatus) {
+    this.getDeviceDetails(mobassetid,devicestatus);
+    this.setState({isVisible:true});
+}
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
 		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
@@ -90,8 +94,9 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
   if(devicestatus == "returned"){
     db.transaction(tx => {
       tx.executeSql('select * from devices where assetid=?', [mobassetid], (tx, results) => {
+        var temp1 = [];
         for (let i = 0; i < results.rows.length; ++i) {
-          temp.push({
+          temp1.push({
             key: `${i}`,
             device_assetid: results.rows.item(i).assetid,
             device_devicename: results.rows.item(i).devicename,
@@ -102,14 +107,16 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
             device_isactive: results.rows.item(i).isactive,
           });
         }
-        this.setState({deviceViewData: temp,});
+        this.setState({deviceViewData: temp1,});
       });
     });
   } else{
+   
     db.transaction(tx => {
-      tx.executeSql('select * from devices,entries where devices.assetid = entries.assetid and entries.returntime is NULL and devices.assetid = ?', [mobassetid], (tx, results) => {
+      tx.executeSql('select * from devices,entries where devices.assetid = entries.assetid and entries.returntime ="" and devices.assetid = ?', [mobassetid], (tx, results) => {
+        var temp2 = [];
         for (let i = 0; i < results.rows.length; ++i) {
-          temp.push({
+          temp2.push({
             key: `${i}`,
           device_assetid: results.rows.item(i).assetid,
           device_devicename: results.rows.item(i).devicename,
@@ -123,32 +130,26 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
           user_pickuptime: results.rows.item(i).pickuptime,
         });
         }
-        this.setState({deviceViewData: temp,});
+        this.setState({deviceViewData: temp2,});
+       // alert(results.rows.length);
       });
     });
+    
   }
-  this.setState({isVisible: true});
-  alert(this,state,deviceViewData.lastname);
-}
-getPickUpTime=(assetid)=>{
   
 }
 
   render() {
    return (
-
     <View style={{flex: 1}}>
-      
         <DropdownMenu
             style={{flex: 1}}
             bgColor={'#EBF5FB'}
             tintColor={'#666666'}
             activityTintColor={'green'}
             handler={(selection, row) => {
-              
               this.updateTablebyFilter(selection, row);
             }}
-            
             data={data}
             >
             <SwipeListView
@@ -156,6 +157,7 @@ getPickUpTime=(assetid)=>{
               keyExtractor={(item,index) => index.toString()}
               renderItem={ (data, rowMap) => (
                 <TouchableHighlight
+                onPress={ () => this.viewOnTap(data.item.assetid,data.item.devicestatus) }
                   style={customstyle.rowFront}
                   underlayColor={'#AAA'}
                   key={data.item.key}
@@ -190,10 +192,79 @@ getPickUpTime=(assetid)=>{
               previewOpenDelay={3000}
               onSwipeValueChange={this.onSwipeValueChange}
             />
-          </DropdownMenu>   
-          
-        </View>
-        
+          </DropdownMenu>  
+          {this.state.isVisible ? 
+          <Overlay
+            isVisible={this.state.isVisible}
+            onBackdropPress={() => this.setState({ isVisible: false })}>
+              {this.state.deviceViewData.map((item)=>{
+                return(
+                <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+                    <View style={{flex: 0.5,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
+                      <Text style={customstyle.subheader}>Device Details</Text>
+                    </View>
+                    <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
+                        {<View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Device Type</Text>
+                        {item.device_devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
+                                item.device_devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
+                          </View> }
+                        <View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Device Name</Text>
+                          <Text style={customstyle.row_value}>{item.device_devicename}</Text>
+                          </View>
+                        <View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Device Status</Text>
+                          {item.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
+                          (<Text style={customstyle.row_value}>{item.device_devicestatus}</Text> ) }
+                        </View>
+                        <View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Team</Text>
+                            <Text style={customstyle.row_value}>{item.device_team}</Text>
+                          </View>
+                        <View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Location</Text>
+                          <Text style={customstyle.row_value}>{item.device_location}</Text>
+                        </View>
+                        <View style={customstyle.row_details}>
+                          <Text style={customstyle.row_label}>Device active?</Text>
+                          <Text style={customstyle.row_value}>{item.device_isactive}</Text>
+                        </View>  
+                      </View> 
+                  {item.device_devicestatus != "issued"?
+                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between'}}>
+                      <View style={customstyle.row_details}><Text>This device is not allocated. To reserve, Go to HomePage and Tap on Scan Now.</Text></View></View>:
+                        <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}> 
+                          <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB',borderBottomWidth: 1, borderBottomColor:'#D5D8DC',borderTopWidth: 1, borderTopColor:'#D5D8DC'}}>
+                            <Text style={customstyle.subheader}>Allocation Details</Text>
+                          </View>
+                          <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
+                            <View style={customstyle.row_details}>
+                              <Text style={customstyle.row_label}>Name</Text>
+                              <Text style={customstyle.row_value}>{item.user_name}</Text>
+                            </View>
+                            <View style={customstyle.row_details}>
+                              <Text style={customstyle.row_label}>User Id</Text>
+                              <Text style={customstyle.row_value}>{item.user_userid}</Text>
+                            </View>
+                            <View style={customstyle.row_details}>
+                              <Text style={customstyle.row_label}>Pickup time</Text>
+                              <Text style={customstyle.row_value}>{item.user_pickuptime}</Text>
+                            </View>
+                          </View>
+                        </View>}
+                  <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
+                    <Button
+                    backgroundColor='#03A9F4'
+                    buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
+                    onPress={() => {this.setState({ isVisible: false })}}
+                    title='DONE' />
+                  </View>
+            </View>);
+              })}
+          </Overlay>: null
+          }
+        </View>    
   )
   }
 }
