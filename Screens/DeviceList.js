@@ -4,6 +4,7 @@ import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button, Icon,Overlay, Card} from 'react-native-elements';
 import DropdownMenu from 'react-native-dropdown-menu';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import { Item } from 'native-base';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 var data = [["All Devices", "Android", "iPhone", "iPad"], ["All", "Available","issued"]];
@@ -27,32 +28,18 @@ export default class DeviceList extends React.Component {
       />
     ),
   });
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
       listType: 'FlatList',
       listViewData: [],
-      entriesViewData: [],
-      
+      //entriesViewData: [],
+      deviceViewData: [],
       isVisible: false,
       deviceType: "All", 
       deviceAvailability: "All",
     }
-    this.state={
-      device_assetid: "",
-      device_devicename: "",
-      device_devicetype: "",
-      device_devicestatus: "",
-      device_team: "",
-      device_location: "",
-      device_isactive: "",
-      device_userid: "",
-      device_name:  "",
-      device_pickuptime:  "",
-      user_userid: "",
-      user_name: "",
-      user_pickuptime: "",
-    }
+    
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
@@ -104,13 +91,16 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
     db.transaction(tx => {
       tx.executeSql('select * from devices where assetid=?', [mobassetid], (tx, results) => {
         for (let i = 0; i < results.rows.length; ++i) {
-          this.setState({device_assetid: results.rows.item(i).assetid});
-          this.setState({device_devicename: results.rows.item(i).devicename});
-          this.setState({device_devicetype: results.rows.item(i).devicetype});
-          this.setState({device_devicestatus: results.rows.item(i).devicestatus});
-          this.setState({device_team: results.rows.item(i).team});
-          this.setState({device_location: results.rows.item(i).location});
-          this.setState({device_isactive: results.rows.item(i).isactive});
+          temp.push({
+            key: `${i}`,
+            device_assetid: results.rows.item(i).assetid,
+            device_devicename: results.rows.item(i).devicename,
+            device_devicetype: results.rows.item(i).devicetype,
+            device_devicestatus: results.rows.item(i).devicestatus,
+            device_team: results.rows.item(i).team,
+            device_location: results.rows.item(i).location,
+            device_isactive: results.rows.item(i).isactive,
+          });
         }
         this.setState({deviceViewData: temp,});
       });
@@ -119,22 +109,26 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
     db.transaction(tx => {
       tx.executeSql('select * from devices,entries where devices.assetid = entries.assetid and entries.returntime is NULL and devices.assetid = ?', [mobassetid], (tx, results) => {
         for (let i = 0; i < results.rows.length; ++i) {
-          this.setState({device_assetid: results.rows.item(i).assetid});
-          this.setState({device_devicename: results.rows.item(i).devicename});
-          this.setState({device_devicetype: results.rows.item(i).devicetype});
-          this.setState({device_devicestatus: results.rows.item(i).devicestatus});
-          this.setState({device_team: results.rows.item(i).team});
-          this.setState({device_location: results.rows.item(i).location});
-          this.setState({device_isactive: results.rows.item(i).isactive});
-          this.setState({user_userid: results.rows.item(i).userid});
-          this.setState({user_name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname});
-          this.setState({user_pickuptime: results.rows.item(i).pickuptime});
+          temp.push({
+            key: `${i}`,
+          device_assetid: results.rows.item(i).assetid,
+          device_devicename: results.rows.item(i).devicename,
+          device_devicetype: results.rows.item(i).devicetype,
+          device_devicestatus: results.rows.item(i).devicestatus,
+          device_team: results.rows.item(i).team,
+          device_location: results.rows.item(i).location,
+          device_isactive: results.rows.item(i).isactive,
+          user_userid: results.rows.item(i).userid,
+          user_name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname,
+          user_pickuptime: results.rows.item(i).pickuptime,
+        });
         }
         this.setState({deviceViewData: temp,});
       });
     });
   }
   this.setState({isVisible: true});
+  alert(this,state,deviceViewData.lastname);
 }
 getPickUpTime=(assetid)=>{
   
@@ -144,6 +138,7 @@ getPickUpTime=(assetid)=>{
    return (
 
     <View style={{flex: 1}}>
+      
         <DropdownMenu
             style={{flex: 1}}
             bgColor={'#EBF5FB'}
@@ -196,74 +191,7 @@ getPickUpTime=(assetid)=>{
               onSwipeValueChange={this.onSwipeValueChange}
             />
           </DropdownMenu>   
-          {this.state.isVisible ? 
-          <Overlay
-            isVisible={this.state.isVisible}
-            onBackdropPress={() => this.setState({ isVisible: false })}>
-            <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
-              <View style={{flex: 0.6,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
-                <Text style={customstyle.subheader}>Device Details</Text>
-              </View>
-              <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 10}}>
-                  {<View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Device Type</Text>
-                  {this.state.device_devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                          this.state.device_devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-                    </View> }
-                  <View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Device Name</Text>
-                    <Text style={customstyle.row_value}>{this.state.device_devicename}</Text>
-                    </View>
-                  <View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Device Status</Text>
-                    {this.state.device_devicestatus == "returned" ? (<Text style={customstyle.row_cell_available_Value}>Available</Text>) : 
-                    (<Text style={customstyle.row_value}>{this.state.device_devicestatus}</Text> ) }
-                  </View>
-                  <View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Team</Text>
-                      <Text style={customstyle.row_value}>{this.state.device_team}</Text>
-                    </View>
-                  <View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Location</Text>
-                    <Text style={customstyle.row_value}>{this.state.device_location}</Text>
-                  </View>
-                  <View style={customstyle.row_details}>
-                    <Text style={customstyle.row_label}>Device active?</Text>
-                    <Text style={customstyle.row_value}>{this.state.device_isactive}</Text>
-                  </View>   
-              </View>
-            {this.state.device_devicestatus != "issued"?
-            <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}>
-                <View style={customstyle.row_details}><Text>This device is not allocated. To reserve, Go to HomePage and Tap on Scan Now.</Text></View></View>:
-                  <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}> 
-                    <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB',borderBottomWidth: 1, borderBottomColor:'#D5D8DC',borderTopWidth: 1, borderTopColor:'#D5D8DC'}}>
-                      <Text style={customstyle.subheader}>Allocation Details</Text>
-                    </View>
-                    <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Name</Text>
-                      <Text style={customstyle.row_value}>{this.state.user_name}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>User Id</Text>
-                      <Text style={customstyle.row_value}>{this.state.user_userid}</Text>
-                    </View>
-                    <View style={customstyle.row_details}>
-                      <Text style={customstyle.row_label}>Pickup time</Text>
-                      <Text style={customstyle.row_value}>{this.state.user_pickuptime}</Text>
-                    </View>
-                    </View>
-                  </View>}
-            <View style={{flex: 1, flexDirection:'row',alignContent: 'center', justifyContent: 'center', paddingTop: 5}}>
-              <Button
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 10, marginRight: 10, marginBottom: 0, height:35, width:100}}
-              onPress={() => {this.setState({ isVisible: false })}}
-              title='DONE' />
-            </View>
-            </View>
-          </Overlay>: null
-          }
+          
         </View>
         
   )
