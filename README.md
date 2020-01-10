@@ -17,3 +17,8 @@
 * npm install --save react-native-swipe-list-view
 * npm install --save react-native-swipeout
 * react-redux
+
+* npm install native-base --save
+* npm install --save react-native-material-dropdown
+* npm install react-native-chart-kit --save
+* npm install react-native-svg --save
