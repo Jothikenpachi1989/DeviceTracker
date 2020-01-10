@@ -147,11 +147,8 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
             bgColor={'#EBF5FB'}
             tintColor={'#666666'}
             activityTintColor={'green'}
-            handler={(selection, row) => {
-              this.updateTablebyFilter(selection, row);
-            }}
-            data={data}
-            >
+            handler={(selection, row) => {  this.updateTablebyFilter(selection, row);}}
+            data={data}>
             <SwipeListView
               data={this.state.listViewData}
               keyExtractor={(item,index) => index.toString()}
@@ -197,9 +194,10 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
           <Overlay
             isVisible={this.state.isVisible}
             onBackdropPress={() => this.setState({ isVisible: false })}>
-              {this.state.deviceViewData.map((item)=>{
+              <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+              {this.state.deviceViewData.map((item,key)=>{
                 return(
-                <View style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
+                <View key={item} style={{flex: 1, flexDirection: 'column',justifyContent: 'space-between', borderWidth: 1, borderColor: '#D5D8DC'}}>
                     <View style={{flex: 0.5,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB', borderBottomWidth: 1, borderBottomColor:'#D5D8DC'}}>
                       <Text style={customstyle.subheader}>Device Details</Text>
                     </View>
@@ -261,7 +259,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
                     title='DONE' />
                   </View>
             </View>);
-              })}
+              })}</View>
           </Overlay>: null
           }
         </View>    
