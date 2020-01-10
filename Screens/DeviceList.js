@@ -230,8 +230,13 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
                         </View>  
                       </View> 
                   {item.device_devicestatus != "issued"?
-                  <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between'}}>
-                      <View style={customstyle.row_details}><Text>This device is not allocated. To reserve, Go to HomePage and Tap on Scan Now.</Text></View></View>:
+                  <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}>
+                      <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB',borderBottomWidth: 1, borderBottomColor:'#D5D8DC',borderTopWidth: 1, borderTopColor:'#D5D8DC'}}>
+                            <Text style={customstyle.subheader}>Allocation Details</Text>
+                          </View>
+                          <View style={{flex: 4, flexDirection:'column',justifyContent: 'space-between', paddingBottom: 5}}>
+                            <View style={customstyle.row_details}>
+                        <Text>Device not allocated to anyone. To reserve, Go to HomePage and Tap on Scan Now.</Text></View></View></View>:
                         <View style={{flex: 3, flexDirection:'column',justifyContent: 'space-between'}}> 
                           <View style={{flex: 1,alignContent: 'center', justifyContent: 'flex-start', backgroundColor: '#EBF5FB',borderBottomWidth: 1, borderBottomColor:'#D5D8DC',borderTopWidth: 1, borderTopColor:'#D5D8DC'}}>
                             <Text style={customstyle.subheader}>Allocation Details</Text>
