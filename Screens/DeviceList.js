@@ -7,7 +7,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Item } from 'native-base';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-var data = [["All Devices", "Android", "iPhone", "iPad"], ["All", "Available","issued"]];
+var data = [["All Devices", "Android", "Tablet","iPhone", "iPad"], ["All", "Available","issued"]];
    
 export default class DeviceList extends React.Component {
   static navigationOptions = ({navigation})=>({
@@ -34,10 +34,10 @@ export default class DeviceList extends React.Component {
       listType: 'FlatList',
       listViewData: [],
       deviceViewData: [],
-      //deviceIssuedData: [],
+      listViewDataBackup: [],
       isVisible: false,
-      deviceType: "All", 
-      deviceAvailability: "All",
+      deviceTypeFilter: "All Devices", 
+      deviceAvailabilityFilter: "All",
     }
     this.rowSwipeAnimatedValues = {};
 		Array(20).fill('').forEach((_, i) => {
@@ -60,16 +60,63 @@ export default class DeviceList extends React.Component {
           });
         }
         this.setState({listViewData: temp,});
+        this.setState({listViewDataBackup: temp,});
       });
     });
   }
   updateTablebyFilter=(selection, row)=>{
     if(selection==0){
-      this.setState({deviceType: data[selection][row]})
+      var demoData = [];
+      if(row!=0){
+        this.setState({deviceTypeFilter: data[selection][row]});
+        if(this.state.deviceAvailabilityFilter == "All"){
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicetype == data[selection][row]);
+        }else if(this.state.deviceAvailabilityFilter == "Available"){
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicetype == data[selection][row]);
+          demoData= demoData.filter(entry => entry.devicestatus == "returned");
+        }else{
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicetype == data[selection][row]);
+          demoData= demoData.filter(entry => entry.devicestatus == "issued");
+        }
+      }else{
+        this.setState({deviceTypeFilter: "All Devices"});
+        if(this.state.deviceAvailabilityFilter == "All"){
+          demoData = this.state.listViewDataBackup;
+        }else if(this.state.deviceAvailabilityFilter == "Available"){
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == "returned");
+        }else{
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == "issued");
+        }
+      }    
+      this.setState({listViewData:demoData});
     }else if(selection==1){
-      this.setState({deviceAvailability: data[selection][row]})
-    }
-   alert(this.state.deviceType + " " + this.state.deviceAvailability);
+      var demoData = [];
+      if(row==2){
+        this.setState({deviceAvailabilityFilter: data[selection][row]});
+        if(this.state.deviceTypeFilter == "All Devices"){
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == data[selection][row]);
+        }else{
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == data[selection][row]);
+          demoData= demoData.filter(entry => entry.devicetype == this.state.deviceTypeFilter);
+        }
+      }else if(row==1){
+        this.setState({deviceAvailabilityFilter: data[selection][row]});
+        if(this.state.deviceTypeFilter == "All Devices"){
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == "returned");
+        }else{
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicestatus == "returned");
+          demoData= demoData.filter(entry => entry.devicetype == this.state.deviceTypeFilter);
+        }
+      }else{
+        this.setState({deviceAvailabilityFilter: "All"});
+        if(this.state.deviceTypeFilter == "All Devices"){
+          demoData = this.state.listViewDataBackup;
+        }else{
+          demoData= this.state.listViewDataBackup.filter(entry => entry.devicetype == this.state.deviceTypeFilter);
+        }
+      }
+      this.setState({listViewData:demoData});
+    }   
   }
   closeRow(rowMap, rowKey) {
 		if (rowMap[rowKey]) {
@@ -131,14 +178,10 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
         });
         }
         this.setState({deviceViewData: temp2,});
-       // alert(results.rows.length);
       });
     });
-    
   }
-  
 }
-
   render() {
    return (
     <View style={{flex: 1}}>
@@ -147,7 +190,7 @@ getDeviceDetails=(mobassetid,devicestatus)=>{
             bgColor={'#EBF5FB'}
             tintColor={'#666666'}
             activityTintColor={'green'}
-            handler={(selection, row) => {  this.updateTablebyFilter(selection, row);}}
+            handler={(selection, row) => {this.updateTablebyFilter(selection, row);}}
             data={data}>
             <SwipeListView
               data={this.state.listViewData}
