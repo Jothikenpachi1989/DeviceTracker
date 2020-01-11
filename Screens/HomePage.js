@@ -67,7 +67,7 @@ export default class HomePage extends React.Component {
                       </Text>
           </View>
         </View>
-        <View  style={{flex: 5, justifyContent: 'space-around' , alignSelf: 'stretch' , alignItems: 'center'}}>
+        <View  style={{flex: 4, justifyContent: 'space-around' , alignSelf: 'stretch' , alignItems: 'center', alignContent: 'center'}}>
          <TouchableOpacity
             onPress={() => nav.navigate('PersonScan')}
             style={styles.buttonTouch}>

@@ -99,7 +99,7 @@ onQR_Code_Scan_Done = (QR_Code) => {
     if (!this.state.Start_Scanner) {
       return (<ScrollView>
         <View style={styles.MainContainer}>
-             <View style={{flex: 3,alignItems: 'center',justifyContent: 'space-evenly',padding: 10,}}>
+             <View style={{flex: 3,alignItems: 'center',justifyContent: 'space-evenly',paddingTop: 15,}}>
                 <Image style={{paddingTop: 10}} source={require('../images/scan-icon.png')} />
                 <Text style={{ fontSize: 22, textAlign: 'center',padding: 10, }}>Scan your Person QR Code</Text> 
                 <Text style={{ fontSize: 12, textAlign: 'center',padding: 10, }}>User Login</Text>   
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
      alignItems: 'center',
+     alignContent: 'center',
     justifyContent: 'flex-end',
   },
   QR_text: {
