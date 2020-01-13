@@ -41,7 +41,7 @@ this.getWeekData('2019-12-29', '2019-12-31');
   getWeekData=(fromDate,toDate)=>{
     
     db.transaction(tx => {
-      tx.executeSql('SELECT * FROM entries where pickuptime between "?" AND "?"', [fromDate,toDate], (tx, results) => {
+      tx.executeSql('SELECT * FROM entries', [], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
           temp.push({
@@ -50,7 +50,6 @@ this.getWeekData('2019-12-29', '2019-12-31');
             pickuptime: results.rows.item(i).pickuptime,
             devicename: results.rows.item(i).devicename,
             returntime: results.rows.item(i).returntime,
-           
           });
         }
         alert(results.rows.length);

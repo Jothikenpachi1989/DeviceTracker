@@ -162,6 +162,11 @@ export default class UserPage extends React.Component {
             <Text style={{ color: 'gray', fontSize: 16,}} >{this.state.uname} </Text>
           </View>
           <Badge value={"# of devices : " + this.state.nofdevices} status="success"></Badge>
+          <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname,admin:this.state.isadmin})}
+          style={customstyle.button2}>
+            <Text style={{ color: '#FFF', fontSize: 12, textAlign: 'center'}}>Add More</Text>
+        </TouchableOpacity> 
            </View>
         
            <View style={customstyle.container}>
@@ -207,12 +212,12 @@ export default class UserPage extends React.Component {
 	        </View>
 
         <View style={ customstyle.bottomView} >
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('DeviceScanPage',{itemId : this.state.id, name: this.state.uname,admin:this.state.isadmin})}
-          style={customstyle.button}>
-            <Text style={{ color: '#FFF', fontSize: 14 }}>Add More Device</Text>
-        </TouchableOpacity> 
         
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('DeviceList')}
+          style={customstyle.button}>
+            <Text style={{ color: '#FFF', fontSize: 14 }}>View All Devices</Text>
+        </TouchableOpacity> 
         </View>
     </View>
   )
@@ -264,6 +269,7 @@ const customstyle = StyleSheet.create(
     bottomView:{
       width: '100%', 
       height: 50, 
+      flexDirection: 'column',
       backgroundColor: '#FFFFFF', 
       justifyContent: 'center', 
       alignItems: 'center',
@@ -329,5 +335,17 @@ const customstyle = StyleSheet.create(
       marginTop:10,
       marginBottom: 10,
       borderRadius:10,
+    },
+    button2: {
+      backgroundColor: '#3498DB',
+      padding: 5,
+      justifyContent: 'center',
+      alignItems: "center",
+      width: 60,
+      //marginRight:40,
+      marginLeft:5,
+     // marginTop:10,
+      //marginBottom: 10,
+      borderRadius:20,
     },
   });

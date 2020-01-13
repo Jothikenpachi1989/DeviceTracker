@@ -69,7 +69,7 @@ export default class HomePage extends React.Component {
         </View>
         <View  style={{flex: 4, justifyContent: 'space-around' , alignSelf: 'stretch' , alignItems: 'center', alignContent: 'center'}}>
          <TouchableOpacity
-            onPress={() => nav.navigate('PersonScan')}
+            onPress={() => nav.push('PersonScan')}
             style={styles.buttonTouch}>
               <Text style={{ color: '#ffffff', fontSize: 15 , fontWeight: 'bold' }}>Reserve A Device</Text>
           </TouchableOpacity>

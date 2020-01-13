@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, TextInput, View} from 'react-native';
-import {Animated,TouchableOpacity,TouchableHighlight,Alert} from 'react-native';
-import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
+import { StyleSheet, Text, View} from 'react-native';
+import {Animated,TouchableOpacity,Alert, ScrollView} from 'react-native';
+import { Input} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Dropdown } from 'react-native-material-dropdown';
 import {KeyboardAvoidingView} from 'react-native';
@@ -115,8 +115,8 @@ export default class EditDetails extends React.Component {
   render() {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
-//<KeyboardAvoidingView style={{flex:1,}} behavior="padding" enabled>
-    <View style={{flex: 1}}> 
+<KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={-500}>
+<ScrollView style={{flex: 1}}><View style={{flex: 1}}> 
       {this.state.modules == "Add/Edit Person" ?
           <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start', borderWidth: 1, borderColor: '#D5D8DC'}}>
              <View style={{flex: 1, flexDirection:'column', paddingBottom: 5}}>
@@ -182,8 +182,8 @@ export default class EditDetails extends React.Component {
                     </View>
                 </View>    
             }
-        </View>
-        //</KeyboardAvoidingView> 
+        </View></ScrollView>
+        </KeyboardAvoidingView> 
   )
   }
 }
@@ -214,48 +214,6 @@ const customstyle = StyleSheet.create(
       fontWeight: 'normal',
       fontSize: 14,
     },
-    subheader:{
-      elevation: 1,
-      fontSize: 18,
-      alignContent: 'flex-start',
-      fontWeight: 'bold',
-      color: '#808B96',
-      paddingLeft: 5,
-      paddingRight: 5,
-      marginLeft: 10,
-      marginRight: 10,
-      alignSelf: 'center',
-    },
-    row_label:{
-      paddingLeft: 10,
-      fontWeight: 'bold',
-      flexDirection: 'column',
-    },
-    row_value:{
-      alignContent: 'flex-end',
-      paddingRight: 10,
-    },
-    row_cell_available_Value: {
-      color: '#008000',
-      alignContent: 'flex-end',
-      paddingRight: 10,
-      flex: 0,
-    }, 
-    row_details: {
-      borderColor: '#D5D8DC',
-      borderBottomWidth: 1, 
-      backgroundColor: '#ffffff',
-      flex: 1,
-      flexDirection: 'row',  // main axis
-      justifyContent: 'space-between', // main axis
-      alignItems: 'center', // cross axis
-      paddingTop: 5,
-      paddingBottom: 5,
-      paddingLeft: 5,
-      paddingRight: 5,
-      marginLeft: 5,
-      marginRight: 5,
-    },
     row_details2: {
       borderColor: '#D5D8DC',
       backgroundColor: '#ffffff',
@@ -265,71 +223,5 @@ const customstyle = StyleSheet.create(
       alignItems: 'center', // cross axis
       paddingTop: 5,
       paddingBottom: 5,
-    },
-    row_cell_temp: {
-      color: '#111111',
-      paddingLeft: 10,
-      flex: 0,
-    },
-    row_cell_available: {
-      color: '#008000',
-      paddingLeft: 10,
-      flex: 0,
-    },  
-    backTextWhite: {
-      color: '#FFF'
-    },
-    row: {
-      elevation: 1,
-      borderRadius: 2,
-      backgroundColor: '#ffffff',
-      flex: 1,
-      flexDirection: 'row',  // main axis
-      justifyContent: 'flex-start', // main axis
-      alignItems: 'center', // cross axis
-      paddingLeft: 5,
-      paddingRight: 5,
-      
-    },
-    row_cell_icon: {
-      paddingLeft: 10,
-      flexDirection: 'column',
-    },
-    row_cell_devicename: {
-      flex: 1,
-      paddingLeft: 20,
-      flexDirection: 'column',
-    },
-    row_cell_place: {
-      flexDirection: 'column',
-      paddingRight: 10,
-    },
-    rowFront: {
-      alignItems: 'center',
-      backgroundColor: '#EBF5FB',
-      justifyContent: 'center',
-      height: 50,
-      borderColor: '#D5D8DC',
-      borderRadius: 1,
-    },
-    rowBack: {
-      alignItems: 'center',
-      backgroundColor: '#EBF5FB',
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingLeft: 15,
-    },
-    backRightBtn: {
-      alignItems: 'center',
-      bottom: 0,
-      justifyContent: 'center',
-      position: 'absolute',
-      top: 0,
-      width: 75
-    },
-    backRightBtnRight: {
-      backgroundColor: 'red',
-      right: 0
     },
   });

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text,  View} from 'react-native';
+import { StyleSheet, Text, View, ScrollView} from 'react-native';
 import {Animated,TouchableOpacity,Alert} from 'react-native';
 import { Input} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -142,8 +142,8 @@ export default class AddDetails extends React.Component {
   render() {
    return (
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
-//<KeyboardAvoidingView style={{flex:1,}} behavior="padding" enabled>
-    <View style={{flex: 1}}> 
+<KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled   keyboardVerticalOffset={-500}>
+<ScrollView style={{flex: 1}}><View style={{flex: 1}}> 
       {this.state.modules == "Add/Edit Person" ?
           <View style={{flex: 1, flexDirection: 'column',justifyContent: 'flex-start', borderWidth: 1, borderColor: '#D5D8DC'}}>
              <View style={{flex: 1, flexDirection:'column', paddingBottom: 5}}>
@@ -213,7 +213,7 @@ export default class AddDetails extends React.Component {
                 </View>    
             }
         </View>
-        //</KeyboardAvoidingView> 
+        </ScrollView></KeyboardAvoidingView> 
   )
   }
 }
