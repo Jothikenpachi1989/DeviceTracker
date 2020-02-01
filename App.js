@@ -15,7 +15,6 @@ import { createStackNavigator, createAppContainer, createSwitchNavigator } from 
 import DeviceList from './Screens/DeviceList';
 import HomePage from './Screens/HomePage'
 import UserPage from './Screens/UserPage'
-import IssuedDeviceList from './Screens/IssuedDeviceList'
 import EntriesDeviceList from './Screens/EntriesDeviceList'
 import AdminPage from './Screens/Admin/AdminPage'
 import ViewCustomList from './Screens/Admin/ViewCustomList'
@@ -97,7 +96,6 @@ const AppNavigator = createStackNavigator(
     PersonScan: { screen: PersonScanPage},
     DeviceScanPage: { screen: DeviceScanPage},
     UserPage: {screen: UserPage},
-    IssuedDeviceList:{screen: IssuedDeviceList},
     EntriesDeviceList:{screen: EntriesDeviceList},
     AdminPage:{screen: AdminPage},
     ViewCustomList:{screen: ViewCustomList},
