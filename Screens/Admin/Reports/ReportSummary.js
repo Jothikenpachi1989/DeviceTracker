@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View,Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button,Avatar} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import {LineChart} from "react-native-chart-kit";
+import {BarChart} from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 
 var SQlite = require('react-native-sqlite-storage')
@@ -64,49 +64,31 @@ this.getWeekData('2019-12-29', '2019-12-31');
     <View style={{flex: 0.2, backgroundColor: '#444444'}}>
     </View>
       <View style={{flex: 1, backgroundColor: '#EBF5FB'}}>
-      <LineChart
-    data={{
-      labels: ["January", "February", "March", "April", "May", "June"],
-      datasets: [
-        {
-          data: [
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100
-          ]
-        }
-      ]
-    }}
-    width={Dimensions.get("window").width} // from react-native
-    height={220}
-    yAxisLabel={"$"}
-    yAxisSuffix={"k"}
-    chartConfig={{
-      backgroundColor: "#e26a00",
-      backgroundGradientFrom: "#fb8c00",
-      backgroundGradientTo: "#ffa726",
-    
-      decimalPlaces: 2, // optional, defaults to 2dp
-      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      style: {
-        borderRadius: 16
-      },
-      propsForDots: {
-        r: "6",
-        strokeWidth: "2",
-        stroke: "#ffa726"
-      }
-    }}
-    bezier
-    style={{
-      marginVertical: 8,
-      borderRadius: 16
-    }}
-  />
+      <BarChart
+        data={{
+          labels: ["12-29", "12-30", "12-31", "01-01", "01-02", "01-03"],
+          datasets: [
+            {data: [20, 45, 28, 80, 99, 43],},
+          ],
+        }}
+        width={Dimensions.get('window').width - 5}
+        height={180}
+        chartConfig={{
+          backgroundColor: '#1cc910',
+          backgroundGradientFrom: '#eff3ff',
+          backgroundGradientTo: '#efefef',
+          decimalPlaces: 0,
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
+      />
+      
       </View>
       <View style={{flex: 2}}>
       <SwipeListView
