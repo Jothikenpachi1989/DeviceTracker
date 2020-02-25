@@ -56,7 +56,7 @@ export default class DeviceList extends React.Component {
             devicetype: results.rows.item(i).devicetype,
             team: results.rows.item(i).team,
             devicestatus: results.rows.item(i).devicestatus,
-            pickup: results.rows.item(i).pick,
+            pickup: results.rows.item(i).pickuptime,
           });
         }
         this.setState({listViewData: temp,});

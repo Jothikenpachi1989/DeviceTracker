@@ -58,6 +58,13 @@ export default class AdminPage extends React.Component {
         }
       });
     });
+    db.transaction(tx => {
+      tx.executeSql('select count(*) as NotReturned from entries where defaults="Y" AND returntime is NULL', [], (tx, results) => {
+        for (let i = 0; i < results.rows.length; ++i) {
+          this.setState({NotReturned: results.rows.item(i).NotReturned});
+        }
+      });
+    });
    }
   render() {
    
