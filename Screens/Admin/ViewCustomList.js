@@ -122,7 +122,7 @@ export default class ViewCustomList extends React.Component {
       });
     } else if(this.state.modules == "Not Returned"){
       db.transaction(tx => {
-        tx.executeSql('select * from devices', [], (tx, results) => {
+        tx.executeSql('select * from entries where returntime is NULL', [], (tx, results) => {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push({

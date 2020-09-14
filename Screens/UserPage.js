@@ -143,6 +143,7 @@ export default class UserPage extends React.Component {
               (tx, results) => {
                 if(results.rowsAffected>0 && flag ){
                   alert('Device returned successfully');
+                  this.setState({nofdevices : this.state.nofdevices-1});
                 }else{
                   alert('Return Failed');
                 }
