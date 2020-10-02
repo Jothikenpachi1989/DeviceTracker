@@ -100,7 +100,7 @@ onQR_Code_Scan_Done = (QR_Code) => {
       return (<ScrollView>
         <View style={styles.MainContainer}>
              <View style={{flex: 3,alignItems: 'center',justifyContent: 'space-evenly',paddingTop: 15,}}>
-                <Image style={{paddingTop: 10}} source={require('../images/scan-icon.png')} />
+                <Image style={{paddingTop: 10}} source={require('../images/scan-icon.png')} style={{width: 150, height: 150}} />
                 <Text style={{ fontSize: 22, textAlign: 'center',padding: 10, }}>Scan your Person QR Code</Text> 
                 <Text style={{ fontSize: 12, textAlign: 'center',padding: 10, }}>User Login</Text>   
               </View>

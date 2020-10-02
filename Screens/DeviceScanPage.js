@@ -192,7 +192,7 @@ scanmore=()=>{
         <View style={styles.MainContainer}>
             <View style={{flex: 1, alignItems: 'center',justifyContent: 'center',padding: 12,}}>
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Welcome, {PersonName}</Text> 
-              <Image source={require('../images/scan-icon.png')} />
+              <Image source={require('../images/scan-icon.png')} style={{width: 150, height: 150}}/>
               <Text style={{ fontSize: 22, textAlign: 'center',padding: 12, }}>Scan your Device</Text> 
               <Text style={{ fontSize: 12, textAlign: 'center',padding: 12, }}>Device Issues or Return</Text> 
               <TouchableOpacity
