@@ -10,7 +10,7 @@ let loc = [{ value: 'Chennai', }, { value: 'Hydrebad', }];
 let deviceActive = [{ value: 'y', }, { value: 'n', }];
 let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 
-export default class ViewCustomList extends React.Component {
+export default class PendingDevice extends React.Component {
   static navigationOptions = ({navigation})=>({
     headerTitle: navigation.getParam('titleName', ''),
     headerTintColor: '#ffffff',

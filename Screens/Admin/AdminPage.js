@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Platform,TouchableOpacity, StyleSheet, View,ImageBackground, Text} from 'react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem, Badge} from 'react-native-elements';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
 
@@ -49,6 +49,7 @@ export default class AdminPage extends React.Component {
       issuedDevices: 0,
       NotReturned: 0, 
       TotalDevices: 0,
+      pendingDevices: 0,
     }
     db.transaction(tx => {
       tx.executeSql('select count(*) as Total, sum(case when devicestatus=="issued" then 1 ELSE 0 END) as IssuedDevices from devices', [], (tx, results) => {
@@ -65,9 +66,16 @@ export default class AdminPage extends React.Component {
         }
       });
     });
+    db.transaction(tx => {
+      tx.executeSql('select sum(case when devicestatus=="pending" then 1 ELSE 0 END) as Pending from devices', [], (tx, results) => {
+        for (let i = 0; i < results.rows.length; ++i) {
+          this.setState({pendingDevices: results.rows.item(i).Pending});
+        }
+      });
+    });
    }
   render() {
-   
+    const nav = this.props.navigation;
     return (
     <View style={{flex: 1}}>
       <View style={{flex: 2}} >
@@ -84,35 +92,45 @@ export default class AdminPage extends React.Component {
           <Text style={{color: '#FFFFFF', padding: 5}}>Super User Dashboard</Text>
         </View>
       </View>
-      <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 20}}>
+      <View style={{ flex:2, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#ffffff', padding: 10}}>
         <View style={styles.roundCorner}>
-          <Text style={styles.dashText}>{this.state.issuedDevices}</Text>
           <TouchableOpacity onPress={()=>{this.props.navigation.push("ViewCustomList", {titleName:"Issued Devices"})}}
                   style={styles.button}>
+                    <Text style={styles.dashText}>{this.state.issuedDevices}</Text>
                     <Text style={styles.buttonText}>
                       Issued Devices
                     </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.roundCorner}>
-        <Text style={styles.dashText}>{this.state.NotReturned}</Text>
           <TouchableOpacity onPress={()=>{this.props.navigation.push("ViewCustomList", {titleName:"Not Returned"})}}
                   style={styles.button}>
+                    <Text style={styles.dashText}>{this.state.NotReturned}</Text>
                     <Text style={styles.buttonText}>
                       Not Returned
                     </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.roundCorner}>
-        <Text style={styles.dashText}>{this.state.TotalDevices}</Text>
           <TouchableOpacity onPress={()=>{this.props.navigation.push("ViewCustomList", {titleName:"Total Devices"})}}
                   style={styles.button}>
+                    <Text style={styles.dashText}>{this.state.TotalDevices}</Text>
                     <Text style={styles.buttonText}>
                       Total Devices
                     </Text>
           </TouchableOpacity>
         </View>
       </View>
+      <View style={{flex: 0.7, paddingBottom:20}}>
+        <TouchableOpacity onPress={()=>{this.props.navigation.push("ViewCustomList", {titleName:"pending"})}}
+            
+            style={styles.buttonTouch}>
+              <View style={{flexDirection: "row"}}>
+              <Text style={{ color: '#ffffff', fontSize: 15 , fontWeight: 'bold', paddingRight: 10 }}>Pending returned device</Text>
+              <Badge value={this.state.pendingDevices + ""} status="warning"></Badge>
+              </View>
+          </TouchableOpacity>  
+        </View>
       <View  style={{flex: 5}}>
       {
           list.map((item, i) => (
@@ -128,7 +146,6 @@ export default class AdminPage extends React.Component {
           ))
         }
       </View>
-          
       </View>);
   }
 }
@@ -159,13 +176,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
+  
   roundCorner:{
     width: 100, height: 100,
     marginRight:40,
     marginLeft:40,
     marginTop:10,
-    //paddingTop:20,
-    //paddingBottom:20,
     backgroundColor:'#EBF5FB',
     borderRadius:10,
     borderWidth: 1,
@@ -181,7 +197,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonText:{
-    fontSize: 12, textDecorationLine: 'underline', color: '#3498DB' 
+    fontSize: 12, textDecorationLine: 'underline', color: '#3498DB', fontWeight: "bold", paddingBottom: 20
+  },
+  buttonTouch: {
+    backgroundColor: '#3498DB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    flex: 1,
+    height: 100,
+    marginRight:30,
+    marginLeft:30,
+    marginTop:10,
+    marginBottom: 10,
+    borderRadius:20,
+    borderColor: '#566573',
   },
   button: {
     alignItems: 'center',

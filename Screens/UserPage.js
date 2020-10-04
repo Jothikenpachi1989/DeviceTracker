@@ -124,28 +124,28 @@ export default class UserPage extends React.Component {
     var timestamp = year + '-' + month + '-' + date + ' ' + hours + ':' + min + ':' + sec;
         db.transaction((tx)=> {
             tx.executeSql(
-              'update entries SET returntime = ? where assetid = ? AND returntime is NULL',
+              'update entries SET returntime = ?, pending="yes" where assetid = ? AND returntime is NULL',
               [timestamp,mobassetid],
               (tx, results) => {
                 console.log('Results',results.rowsAffected);
                 if(results.rowsAffected>0){
                   flag = true;
                 }else{
-                  alert('Return Failed');
+                  flag = false;
                 }
               }
             );
           });
           db.transaction((tx)=> {
             tx.executeSql(
-              'update devices SET devicestatus="returned" WHERE assetid = ?',
+              'update devices SET devicestatus="pending" WHERE assetid = ?',
               [mobassetid],
               (tx, results) => {
                 if(results.rowsAffected>0 && flag ){
-                  alert('Device returned successfully');
+                  alert('Device returned and sent request to admin.');
                   this.setState({nofdevices : this.state.nofdevices-1});
                 }else{
-                  alert('Return Failed');
+                  alert('Return Failed 2');
                 }
               }
             );

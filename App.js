@@ -103,6 +103,7 @@ const AppNavigator = createStackNavigator(
     EditDetails: {screen: EditDetails},
     AddDetails: {screen: AddDetails},
     ReportSummary: {screen: ReportSummary},
+    PendingDevice: {screen: PendingDevice},
   },
   {
     initialRouteName: 'HomeScreen',
