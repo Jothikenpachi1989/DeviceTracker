@@ -22,6 +22,7 @@ import ViewDetails from './Screens/Admin/ViewDetails'
 import EditDetails from './Screens/Admin/EditDetails'
 import AddDetails from './Screens/Admin/AddDetails'
 import ReportSummary from './Screens/Admin/Reports/ReportSummary'
+import PendingDevice from './Screens/Admin/PendingDevice'
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
@@ -54,11 +55,6 @@ class App extends React.Component {
         });
     });
 }
-  // constructor(props){
-  //   this.state = {
-  //     firstName: "",
-  //   };
-  // }
   render() {
     return (
     <AppContainer/>

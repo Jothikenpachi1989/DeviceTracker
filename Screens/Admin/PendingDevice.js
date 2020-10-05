@@ -1,18 +1,15 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, TextInput, View} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
-import { Button, Icon,Avatar, Overlay, Input, CheckBox} from 'react-native-elements';
+import { Button} from 'react-native-elements';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-let loc = [{ value: 'Chennai', }, { value: 'Hydrebad', }];
-let deviceActive = [{ value: 'y', }, { value: 'n', }];
-let team = [{ value: 'MDACHE', }, { value: 'MDAHYD', }];
 
 export default class PendingDevice extends React.Component {
   static navigationOptions = ({navigation})=>({
-    headerTitle: navigation.getParam('titleName', ''),
+    headerTitle: "Returned devices for review",
     headerTintColor: '#ffffff',
       headerStyle: {
         backgroundColor: '#2F95D6',
@@ -36,9 +33,10 @@ export default class PendingDevice extends React.Component {
     this.state = {
       listType: 'FlatList',
       listViewData: [],
+      entriesViewData: [],
       itemDB: [],
       overlaystate: "none",
-      isVisible: false,
+      flag: false,
       modules: this.props.navigation.getParam('titleName', ''), //parameter from navigation
     }
     
@@ -47,10 +45,14 @@ export default class PendingDevice extends React.Component {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
     });
     //If Logic to fetch data from database for Devices or Person List view
-    if(this.state.modules == "Add/Edit Device"){ 
+    if(this.state.modules == "pending"){ 
       db.transaction(tx => {
-        tx.executeSql('select * from devices', [], (tx, results) => {
+        tx.executeSql('select * from devices where devicestatus ="pending"', [], (tx, results) => {
           var temp = [];
+          if(results.rows.length == 0){
+              this.setState({flag: false});
+          }else{
+            this.setState({flag: true});
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push({
               key: `${i}`,
@@ -65,101 +67,33 @@ export default class PendingDevice extends React.Component {
             });
           }
           this.setState({listViewData: temp,});
+        }
         });
       });
       db.transaction(tx => {
-        tx.executeSql('select * from entries', [], (tx, results) => {
+        tx.executeSql('select * from entries where pending="yes"', [], (tx, results) => {
           var temp = [];
+          //alert(results.rows.length);
+          if(results.rows.length == 0){
+            this.setState({flag: false});
+           }else{
+          this.setState({flag: true});
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push({
               key: `${i}`,
               assetid: results.rows.item(i).assetid,
-              pickuptime: results.rows.item(i).pickup,
+              pickuptime: results.rows.item(i).pickuptime,
               devicename: results.rows.item(i).devicename,
+              userid: results.row.item(i).userid,
+              name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname,
               returntime: results.rows.item(i).returntime,
             });
           }
           this.setState({entriesViewData: temp,});
+        }
         });
       });
-    } else if(this.state.modules == "Add/Edit Person"){ 
-      db.transaction(tx => {
-        tx.executeSql('select * from users', [], (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push({
-              key: `${i}`,
-              userid: results.rows.item(i).userid,
-              location: results.rows.item(i).location,
-              fname: results.rows.item(i).firstname,
-              lname: results.rows.item(i).lastname,
-              name: results.rows.item(i).firstname + " " + results.rows.item(i).lastname,
-              isadmin: results.rows.item(i).isadmin,
-              team: results.rows.item(i).team
-            });
-          }
-          this.setState({listViewData: temp,});
-        });
-      });
-    } else if(this.state.modules == "Issued Devices"){
-      db.transaction(tx => {
-        tx.executeSql('select * from devices where devicestatus="issued"', [], (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push({
-              key: `${i}`,
-              assetid: results.rows.item(i).assetid,
-              location: results.rows.item(i).location,
-              devicename: results.rows.item(i).devicename,
-              devicetype: results.rows.item(i).devicetype,
-              team: results.rows.item(i).team,
-              devicestatus: results.rows.item(i).devicestatus,
-              os: results.rows.item(i).OS
-            });
-          }
-          this.setState({listViewData: temp,});
-        });
-      });
-    } else if(this.state.modules == "Not Returned"){
-      db.transaction(tx => {
-        tx.executeSql('select * from entries where returntime is NULL', [], (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push({
-              key: `${i}`,
-              assetid: results.rows.item(i).assetid,
-              location: results.rows.item(i).location,
-              devicename: results.rows.item(i).devicename,
-              devicetype: results.rows.item(i).devicetype,
-              team: results.rows.item(i).team,
-              devicestatus: results.rows.item(i).devicestatus,
-              os: results.rows.item(i).OS,
-              isactive: results.rows.item(i).isactive,
-            });
-          }
-          this.setState({listViewData: temp,});
-        });
-      });
-    }else if(this.state.modules == "Total Devices"){
-      db.transaction(tx => {
-        tx.executeSql('select * from devices', [], (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push({
-              key: `${i}`,
-              assetid: results.rows.item(i).assetid,
-              location: results.rows.item(i).location,
-              devicename: results.rows.item(i).devicename,
-              devicetype: results.rows.item(i).devicetype,
-              team: results.rows.item(i).team,
-              devicestatus: results.rows.item(i).devicestatus,
-              os: results.rows.item(i).OS,
-              isactive: results.rows.item(i).isactive,
-            });
-          }
-          this.setState({listViewData: temp,});
-        });
-      });
+    }  else if(this.state.modules == "Total Devices"){
     }
   }
   closeRow(rowMap, rowKey) {
@@ -194,92 +128,46 @@ export default class PendingDevice extends React.Component {
 //Conditional blocks to display listview with Person data or Device data(multiple variations)
     <View style={{flex: 1}}>
       <View style={{flex: 1, paddingBottom:50}}>
-        {this.state.modules == "Add/Edit Person" ? 
-        <SwipeListView
-          data={this.state.listViewData}
-          keyExtractor={(item,index) => index.toString()}
-          renderItem={ (data, rowMap) => (
-            <TouchableHighlight
-            onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
-              style={customstyle.rowFront}
-              underlayColor={'#AAA'}
-              key={data.item.key}
-            >
-            <View style={customstyle.row}>
-            <View style={customstyle.row_cell_icon}>
-            <Avatar rounded icon={{ name: 'person' }} />
-            </View>
-                <View style={customstyle.row_cell_devicename}>
-                  <Text>{data.item.name}</Text>
-                </View>
-                <View style={customstyle.row_cell_devicename}>
-                  <Text>{data.item.userid}</Text>
-                </View>
-                <View style={customstyle.row_cell_place}>
-                <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
-              </View>
-              </View>
-            </TouchableHighlight>
-          )}
-          renderHiddenItem={ (data, rowMap) => (
-            <View style={customstyle.rowBack}>
-              <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.userid) }>
-              <Text style={customstyle.backTextWhite}>Remove</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          rightOpenValue={-70}
-          onSwipeValueChange={this.onSwipeValueChange}
-        />  : 
-        <SwipeListView
-        data={this.state.listViewData}
-        keyExtractor={(item,index) => index.toString()}
-        renderItem={ (data, rowMap) => (
-          <TouchableHighlight
-          onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
-            style={customstyle.rowFront}
-            underlayColor={'#AAA'}
-            key={data.item.key}
-          >
-          <View style={customstyle.row}>
-              <View style={customstyle.row_cell_icon}>
-                {data.item.devicetype == "iPhone" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): 
-                    data.item.devicetype == "iPad" ? (<Icon name='apple1' type='antdesign' color='#7d7d7d' /> ): (<Icon name='android1' type='antdesign' color='#a4c639' />)}
-              </View>
-              <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.devicename}</Text>
-              </View>
-              <View style={customstyle.row_cell_devicename}>
-                <Text>{data.item.assetid}</Text>
-              </View>
-              <View style={customstyle.row_cell_place}>
-                <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
-              </View>
-            </View>
-          </TouchableHighlight>
-        )}
-        renderHiddenItem={ (data, rowMap) => (
-          <View style={customstyle.rowBack}>
-            <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
-            <Text style={customstyle.backTextWhite}>Remove</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        rightOpenValue={-70}
-        onSwipeValueChange={this.onSwipeValueChange}
-      /> 
+        {this.state.modules == "pending" && this.state.flag  == true ? 
+         <SwipeListView
+         data={this.state.listViewData}
+         keyExtractor={(item,index) => index.toString()}
+         renderItem={ (data, rowMap) => (
+           <TouchableHighlight
+           onPress={ () => this.viewOnTap(rowMap, data.item.key,data.item) }
+             style={customstyle.rowFront}
+             underlayColor={'#AAA'}
+             key={data.item.key}
+           >
+           <View style={customstyle.row}>
+               <View style={customstyle.row_cell_devicename}>
+                 <Text>{data.item.devicename}</Text>
+               </View>
+               <View style={customstyle.row_cell_devicename}>
+                 <Text>{data.item.assetid}</Text>
+               </View>
+               <View style={customstyle.row_cell_place}>
+                 <Button title="Edit" type="clear" onPress={ () => this.edit(rowMap, data.item.key,data.item) }/> 
+               </View>
+             </View>
+           </TouchableHighlight>
+         )}
+         renderHiddenItem={ (data, rowMap) => (
+           <View style={customstyle.rowBack}>
+             <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
+             <Text style={customstyle.backTextWhite}>Remove</Text>
+             </TouchableOpacity>
+           </View>
+         )}
+         rightOpenValue={-70}
+         onSwipeValueChange={this.onSwipeValueChange}
+       />  : 
+        <View>
+          <Text>No devices are under review.</Text>
+        </View>
         }
       </View>
-      <View style={customstyle.bottomView} >
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('AddDetails',{titleName:this.state.modules})}
-          style={customstyle.button}>
-            <Text style={{ color: '#FFF', fontSize: 14 }}>Add New</Text>
-        </TouchableOpacity> 
-        
-        </View>
   </View>   
-    
   )
   }
 }

@@ -122,7 +122,7 @@ export default class AdminPage extends React.Component {
         </View>
       </View>
       <View style={{flex: 0.7, paddingBottom:20}}>
-        <TouchableOpacity onPress={()=>{this.props.navigation.push("ViewCustomList", {titleName:"pending"})}}
+        <TouchableOpacity onPress={()=>{this.props.navigation.push("PendingDevice", {titleName:"pending"})}}
             
             style={styles.buttonTouch}>
               <View style={{flexDirection: "row"}}>

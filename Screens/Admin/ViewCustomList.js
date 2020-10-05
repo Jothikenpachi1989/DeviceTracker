@@ -36,6 +36,7 @@ export default class ViewCustomList extends React.Component {
     this.state = {
       listType: 'FlatList',
       listViewData: [],
+      entriesViewData: [],
       itemDB: [],
       overlaystate: "none",
       isVisible: false,
