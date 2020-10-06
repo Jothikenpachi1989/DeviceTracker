@@ -70,9 +70,9 @@ export default class ViewCustomList extends React.Component {
       });
       db.transaction(tx => {
         tx.executeSql('select * from entries', [], (tx, results) => {
-          var temp = [];
+          var temp1 = [];
           for (let i = 0; i < results.rows.length; ++i) {
-            temp.push({
+            temp1.push({
               key: `${i}`,
               assetid: results.rows.item(i).assetid,
               pickuptime: results.rows.item(i).pickup,
@@ -80,7 +80,7 @@ export default class ViewCustomList extends React.Component {
               returntime: results.rows.item(i).returntime,
             });
           }
-          this.setState({entriesViewData: temp,});
+          this.setState({entriesViewData: temp1,});
         });
       });
     } else if(this.state.modules == "Add/Edit Person"){ 
