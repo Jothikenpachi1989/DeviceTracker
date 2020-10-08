@@ -90,6 +90,7 @@ export default class PendingDevice extends React.Component {
             flag = true;
           }else{
             flag = false;
+            alert('Return Failed 1');
           }
         }
       );
