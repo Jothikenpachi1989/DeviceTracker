@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, Alert} from 'react-native';
 import {Animated,TouchableOpacity,TouchableHighlight} from 'react-native';
 import { Button, Icon, Overlay} from 'react-native-elements';
-import DropdownMenu from 'react-native-dropdown-menu';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Item } from 'native-base';
 var SQlite = require('react-native-sqlite-storage')
@@ -82,8 +81,8 @@ export default class PendingDevice extends React.Component {
     var temp = [];
     db.transaction((tx)=> {
       tx.executeSql(
-        'update entries SET pending="" where assetid = ? AND  pending="yes"',
-        [mobassetid],
+        'update entries SET pending ="approved" AND ApprovedBy=? where assetid = ? AND  pending="yes"',
+        ["mcl-5",mobassetid],
         (tx, results) => {
           console.log('Results',results.rowsAffected);
           if(results.rowsAffected>0){
