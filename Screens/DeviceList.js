@@ -7,7 +7,7 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Item } from 'native-base';
 var SQlite = require('react-native-sqlite-storage')
 var db = SQlite.openDatabase({name: 'dataSource.db', createFromLocation: '~Datasource.db'});
-var data = [["All Devices", "Android", "Tablet","iPhone", "iPad"], ["All", "Available","issued"]];
+var data = [["All Devices", "Android", "Tablet","iPhone", "iPad"], ["All", "Available","issued","pending"]];
    
 export default class DeviceList extends React.Component {
   static navigationOptions = ({navigation})=>({
@@ -44,7 +44,6 @@ export default class DeviceList extends React.Component {
 			this.rowSwipeAnimatedValues[`${i}`] = new Animated.Value(0);
     });
     db.transaction(tx => {
-      //tx.executeSql('select assetid,devicetype, devicename, team, location, devicestatus from all_device_detailes', [], (tx, results) => {
         tx.executeSql('SELECT * FROM devices_withPickuptime', [], (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
