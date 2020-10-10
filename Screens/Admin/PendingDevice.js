@@ -67,29 +67,40 @@ export default class PendingDevice extends React.Component {
 			rowMap[rowKey].closeRow();
 		}
 	}
-	rightKey(rowMap, rowKey,mobassetid,devicestatus) {
-    this.approveReturn(mobassetid,devicestatus);
-    this.closeRow(rowMap, rowKey);
+	rightKey(rowMap, rowKey,mobassetid,userid) {
+    this.approveReturn(mobassetid,userid);
+    
+      this.closeRow(rowMap, rowKey);
+      const newData = [...this.state.listViewData];
+      const prevIndex = this.state.listViewData.findIndex(item => item.key === rowKey);
+       newData.splice(prevIndex, 1);
+      this.setState({listViewData: newData});
+
+    if(this.state.flag){      
+      //alert('Device approved and returned successfully');
+      this.setState({flag: false});
+    }
+    
   }
-  viewOnTap(mobassetid,devicestatus) {
+  viewOnTap(mobassetid,userid) {
   }
 	onSwipeValueChange = (swipeData) => {
 		const { key, value } = swipeData;
 		//this.rowSwipeAnimatedValues[key].setValue(Math.abs(value));
   }
-  approveReturn=(mobassetid,devicestatus)=>{
+  approveReturn=(mobassetid,userid)=>{
     var temp = [];
     db.transaction((tx)=> {
       tx.executeSql(
         'update entries SET pending ="approved" AND ApprovedBy=? where assetid = ? AND  pending="yes"',
-        ["mcl-5",mobassetid],
+        [userid,mobassetid],
         (tx, results) => {
-          console.log('Results',results.rowsAffected);
+         // console.log('Results',results.rowsAffected);
           if(results.rowsAffected>0){
-            flag = true;
+            this.setState({flag: true});
           }else{
-            flag = false;
-            alert('Return Failed 1');
+            alert('Return Failed while updating your approval to entries');
+            this.setState({flag: false});
           }
         }
       );
@@ -100,10 +111,11 @@ export default class PendingDevice extends React.Component {
         [mobassetid],
         (tx, results) => {
           if(results.rowsAffected>0 && flag ){
-            alert('Device returned successfully.');
+            alert('Device approved and returned successfully');
             this.setState({nofdevices : this.state.nofdevices-1});
           }else{
-            alert('Return Failed 2');
+            alert('Return Failed while updating your approval to devices');
+            this.setState({flag: false});
           }
         }
       );
@@ -148,7 +160,7 @@ export default class PendingDevice extends React.Component {
               )}
               renderHiddenItem={ (data, rowMap) => (
                 <View style={customstyle.rowBack}>
-                  <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.assetid,data.item.devicestatus) }>
+                  <TouchableOpacity style={[customstyle.backRightBtn, customstyle.backRightBtnRight]} onPress={ _ => this.rightKey(rowMap, data.item.key,data.item.device_assetid,data.item.user_userid) }>
                   <Text style={customstyle.backTextWhite}>Approve</Text>
                   </TouchableOpacity>
                 </View>
