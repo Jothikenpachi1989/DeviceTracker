@@ -13,27 +13,32 @@ const instructions = Platform.select({
 const list = [
   {
     title: 'Add/Edit Device',
-    icon: 'av-timer',
+    icon: 'devices',
     link: 'ViewCustomList'
   },
   {
     title: 'Add/Edit Person',
-    icon: 'flight-takeoff',
+    icon: 'contacts',
     link: 'ViewCustomList'
   },
   {
     title: 'Reports',
-    icon: 'av-timer',
+    icon: 'multiline-chart',
+    link: 'ReportSummary'
+  },
+  {
+    title: 'View My Devices',
+    icon: 'device-hub',
     link: 'ReportSummary'
   },
   {
     title: 'Settings',
-    icon: 'flight-takeoff',
+    icon: 'settings',
     link: 'ViewCustomList'
   },
   {
     title: 'LogOut',
-    icon: 'flight-takeoff',
+    icon: 'block',
     link: 'ViewCustomList'
   },
 ]

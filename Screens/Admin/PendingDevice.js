@@ -18,12 +18,12 @@ export default class PendingDevice extends React.Component {
       },
       headerTitleStyle: {
         fontSize: 18,
-      },headerRight: (
-        <TouchableOpacity
+      },headerRight: ( null
+        /*<TouchableOpacity
         onPress={() => navigation.navigate('AdminPage',)}
         style={{paddingRight:10,}}>
           <Text style={{ color: '#FFF', fontSize: 14 }}>back</Text>
-      </TouchableOpacity> 
+      </TouchableOpacity> */
     ),
   });
   constructor (props) {
@@ -97,10 +97,11 @@ export default class PendingDevice extends React.Component {
         (tx, results) => {
          // console.log('Results',results.rowsAffected);
           if(results.rowsAffected>0){
-            this.setState({flag: true});
+            this.setState({flag: true,});
+            //alert('Device approved and returned successfully');
           }else{
             alert('Return Failed while updating your approval to entries');
-            this.setState({flag: false});
+            this.setState({flag: false,});
           }
         }
       );
@@ -111,11 +112,11 @@ export default class PendingDevice extends React.Component {
         [mobassetid],
         (tx, results) => {
           if(results.rowsAffected>0 && flag ){
-            alert('Device approved and returned successfully');
             this.setState({nofdevices : this.state.nofdevices-1});
+            alert('Device approved and returned successfully');
           }else{
             alert('Return Failed while updating your approval to devices');
-            this.setState({flag: false});
+            this.setState({flag: false,});
           }
         }
       );
